@@ -56,11 +56,8 @@ class Main:
             self.LIMIT = int(self.LIMITOVERRIDE)
         else:
             self.LIMIT = int(__addon__.getSetting("limit"))
-        self.PLOT_ENABLE = __addon__.getSetting("plot_enable")
-        self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed") == 'false'
-        self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed") == 'false'
 
-        
+        self.init_property()
         if self.TYPE == "randommovies":
             self.fetch_movies( 'randommovies' )
         elif self.TYPE == "recentmovies":
@@ -363,7 +360,11 @@ class Main:
             del json_query
             xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
 
-  
+    def init_property(self):
+        self.PLOT_ENABLE = __addon__.getSetting("plot_enable")  == 'true'
+        self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true' 
+        self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true' 
+    
     
 log('script version %s started' % __addonversion__)
 Main()
