@@ -28,7 +28,7 @@ Available infolabels:
 Most of the usual video library infolabels. 
 For artwork other then ListItem.Art(thumb) and ListItem.Art(fanart) use ListItem.Property(<art-type>).
 Streamdetails not yet implemented.
-
+ListItem.Property(type) shows with what option the script was run.
 
 TODO:
 Artist/Album/Musicvideo/Addons support.

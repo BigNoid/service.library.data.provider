@@ -28,8 +28,32 @@ msgctxt "#32003"
 msgid "Set number of items to fetch from the database"
 msgstr ""
 
+msgctxt "#32004"
+msgid "Random Movies"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Recent Movies"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Recommended Movies"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Random Episodes"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Recent Episodes"
+msgstr ""
+
 msgctxt "#32009"
 msgid "Recent Items"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Recommended Episodes"
 msgstr ""
 
 msgctxt "#32011"
@@ -47,3 +71,8 @@ msgstr ""
 msgctxt "#32014"
 msgid "* Hidden to prevent spoilers *"
 msgstr ""
+
+msgctxt "#32015"
+msgid "Random Songs"
+msgstr ""
+

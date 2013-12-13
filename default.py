@@ -86,14 +86,19 @@ class Main:
             json_string = '{"jsonrpc": "2.0",  "id": 1, "method": "VideoLibrary.GetMovies", "params": {"properties": ["title", "originaltitle", "votes", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director"], "limits": {"end": %d},' % self.LIMIT
             if request == "randommovies" and self.RANDOMITEMS_UNPLAYED:
                 json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random" }, "filter": {"field": "playcount", "operator": "lessthan", "value": "1"}}}' %json_string)
+                list_type = __localize__(32004)
             elif request == "randommovies":
                 json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random" } }}' %json_string)
+                list_type = __localize__(32004)
             elif request == 'recentmovies' and self.RECENTITEMS_UNPLAYED:
                 json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded"}, "filter": {"field": "playcount", "operator": "is", "value": "0"}}}' %json_string)
+                list_type = __localize__(32005)
             elif request == "recentmovies":
                 json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded"}, "filter": {"field": "playcount", "operator": "is", "value": "0"}}}' %json_string)
+                list_type = __localize__(32005)
             elif request == "recommendedmovies":
                 json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "lastplayed"}, "filter": {"field": "inprogress", "operator": "true", "value": ""}}}' %json_string)
+                list_type = __localize__(32006)
             json_query = unicode(json_query, 'utf-8', errors='ignore')
  
             json_query = simplejson.loads(json_query)
@@ -139,6 +144,7 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
+                    liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(art.get('poster', ''))
                     liz.setIconImage('DefaultVideoCover.png')
@@ -162,6 +168,7 @@ class Main:
             json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"properties": ["title", "studio", "mpaa", "file", "art"], "sort": {"order": "descending", "method": "lastplayed"}, "filter": {"field": "inprogress", "operator": "true", "value": ""}, "limits": {"end": %d}}, "id": 1}' %self.LIMIT)
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
+            list_type = __localize__(32010)
             if json_query.has_key('result') and json_query['result'].has_key('tvshows'):
                 count = 0
                 for item in json_query['result']['tvshows']:
@@ -206,6 +213,7 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item2['playcount'] })
                     liz.setProperty("resumetime", str(item2['resume']['position']))
                     liz.setProperty("totaltime", str(item2['resume']['total']))
+                    liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(art2.get('thumb',''))
                     liz.setIconImage('DefaultTVShows.png')
@@ -224,12 +232,16 @@ class Main:
             json_string = '{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.GetEpisodes", "params": { "properties": ["title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "streamdetails", "firstaired", "runtime"], "limits": {"end": %d},' %self.LIMIT
             if request == 'recentepisodes' and self.RECENTITEMS_UNPLAYED:
                 json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded"}, "filter": {"field": "playcount", "operator": "lessthan", "value": "1"}}}' %json_string)
+                list_type = __localize__(32008)
             elif request == 'recentepisodes':
                 json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded"}}}' %json_string)
+                list_type = __localize__(32008)
             elif request == 'randomepisodes' and self.RANDOMITEMS_UNPLAYED:
                 json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random" }, "filter": {"field": "playcount", "operator": "lessthan", "value": "1"}}}' %json_string)
+                list_type = __localize__(32007)
             else:
                 json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random" }}}' %json_string)
+                list_type = __localize__(32007)
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
             if json_query.has_key('result') and json_query['result'].has_key('episodes'):
@@ -269,6 +281,7 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
+                    liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(art.get('thumb',''))
                     liz.setIconImage('DefaultTVShows.png')
@@ -329,6 +342,7 @@ class Main:
                 json_query = xbmc.executeJSONRPC('%s  "sort": {"method": "random"}}}'  %json_string)
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
+            list_type = __localize__(32015)
             if json_query.has_key('result') and json_query['result'].has_key('songs'):
                 count = 0
                 for item in json_query['result']['songs']:
@@ -339,6 +353,7 @@ class Main:
                     liz.setInfo( type="Music", infoLabels={ "Genre": " / ".join(item['genre']) })
                     liz.setInfo( type="Music", infoLabels={ "Year": item['year'] })
                     liz.setInfo( type="Music", infoLabels={ "Rating": str(float(item['rating'])) })
+                    liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(item['thumbnail'])
                     liz.setIconImage('DefaultMusicSongs.png')
