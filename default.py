@@ -220,7 +220,7 @@ class Main:
                             liz.setProperty( key, value )
                         except: print_exc()
                     
-                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
+                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item2['file'],listitem=liz,isFolder=False)
             del json_query
             xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
             
