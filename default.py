@@ -46,18 +46,7 @@ def log(txt):
 
 class Main:
     def __init__(self):
-        try:
-            params = dict( arg.split( "=" ) for arg in sys.argv[ 2 ].split( "&" ) )
-            self.TYPE = params.get( "?type", "" )
-        except:
-            params = {}
-        self.LIMITOVERRIDE = params.get( "limit", "false" )
-        if not self.LIMITOVERRIDE:
-            self.LIMIT = int(self.LIMITOVERRIDE)
-        else:
-            self.LIMIT = int(__addon__.getSetting("limit"))
-
-        self.init_property()
+        self._parse_argv()
         if self.TYPE == "randommovies":
             self.fetch_movies( 'randommovies' )
         elif self.TYPE == "recentmovies":
@@ -360,10 +349,21 @@ class Main:
             del json_query
             xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
 
-    def init_property(self):
+    def _parse_argv( self ):
+        try:
+            params = dict( arg.split( "=" ) for arg in sys.argv[ 2 ].split( "&" ) )
+        except:
+            params = {}
+        print params
+        self.LIMITOVERRIDE = int( params.get( "limit", "0" ) )
+        if self.LIMITOVERRIDE > 0:
+            self.LIMIT = int(self.LIMITOVERRIDE)
+        else:
+            self.LIMIT = int(__addon__.getSetting("limit"))
+        self.TYPE = params.get( "?type", "" )
+        self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true'
         self.PLOT_ENABLE = __addon__.getSetting("plot_enable")  == 'true'
-        self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true' 
-        self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true' 
+        self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true'
     
     
 log('script version %s started' % __addonversion__)
