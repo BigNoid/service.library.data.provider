@@ -218,9 +218,6 @@ class Main:
                     else:
                         plot = item['plot']
                     art = item['art']
-                    #streaminfo = item['streamdetails']
-                    #f = open(os.devnull, 'w')
-                    #sys.stdout = f
                     votes = '(' + item['votes'] + ' ' + xbmc.getLocalizedString(20350) + ')'
 
                     # create a list item
@@ -248,10 +245,9 @@ class Main:
                     liz.setThumbnailImage(art.get('poster', ''))
                     liz.setIconImage('DefaultVideoCover.png')
                     liz.setProperty("fanart_image", art.get('fanart', ''))
-                    #for key, value in streaminfo.items():
-                    #   try:
-                    #        liz.addStreamInfo( key, value[0] )
-                    #    except: f
+                    for key, value in item['streamdetails'].iteritems():
+                        for stream in value:
+                            liz.addStreamInfo( key, stream ) 
 
                     for key, value in art.items():
                         try:
@@ -316,6 +312,9 @@ class Main:
                         liz.setThumbnailImage(art2.get('thumb',''))
                         liz.setIconImage('DefaultTVShows.png')
                         liz.setProperty("fanart_image", art2.get('tvshow.fanart',''))
+                        for key, value in item2['streamdetails'].iteritems():
+                            for stream in value:
+                                liz.addStreamInfo( key, stream ) 
                         for key, value in art.items():
                             try:
                                 liz.setProperty( key, value )
@@ -352,7 +351,6 @@ class Main:
                     else:
                         plot = item['plot']
                     art = item['art']
-                    #streaminfo = media_streamdetails(item['file'].encode('utf-8').lower(), item['streamdetails'])
                     liz = xbmcgui.ListItem(item['title'])
                     liz.setInfo( type="Video", infoLabels={ "Title": item['title'] })
                     liz.setInfo( type="Video", infoLabels={ "Episode": item['episode'] })
@@ -372,6 +370,9 @@ class Main:
                     liz.setThumbnailImage(art.get('thumb',''))
                     liz.setIconImage('DefaultTVShows.png')
                     liz.setProperty("fanart_image", art.get('tvshow.fanart',''))
+                    for key, value in item['streamdetails'].iteritems():
+                        for stream in value:
+                            liz.addStreamInfo( key, stream ) 
                     for key, value in art.items():
                         try:
                             liz.setProperty( key, value )
