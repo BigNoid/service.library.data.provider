@@ -2,7 +2,7 @@
 <settings>
     <category label="32012">
         <setting label="32013" type="bool" id="plot_enable" default="true"/>
-        <setting label="32003" type="text" id="limit" default="10"/>
+        <setting label="32003" type="text" id="limit" default="20"/>
     </category>
     <category label="32002">
         <setting label="32011" type="bool" id="randomitems_unplayed" default="true"/>

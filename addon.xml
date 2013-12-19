@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<addon id="plugin.library.data.provider" name="Library Data Provider" provider-name="BigNoid" version="0.0.1">
+<addon id="service.library.data.provider" name="Library Data Provider" provider-name="BigNoid" version="0.0.1">
     <requires>
         <import addon="xbmc.addon" version="12.0.0"/>
         <import addon="xbmc.json" version="6.0.0"/>
@@ -9,6 +9,7 @@
     <extension library="default.py" point="xbmc.python.pluginsource">
         <provides>video</provides>
     </extension>
+	<extension library="default.py" point="xbmc.service" start="login" />
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plugin for skins to provide library data throughout the skin.</summary>
         <description lang="en">Plugin for skins to provide library data throughout the skin.</description>
