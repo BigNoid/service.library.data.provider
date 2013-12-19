@@ -398,6 +398,7 @@ class Main:
                     liz.setInfo( type="Music", infoLabels={ "Genre": " / ".join(item['genre']) })
                     liz.setInfo( type="Music", infoLabels={ "Year": item['year'] })
                     liz.setInfo( type="Music", infoLabels={ "Rating": str(float(item['rating'])) })
+                    liz.setInfo( type="Music", infoLabels={ "Album": item['album'] })
                     liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(item['thumbnail'])
