@@ -293,7 +293,7 @@ class Main:
                         else:
                             plot = item2['plot']
                         art = item['art']
-                        liz = xbmcgui.ListItem(item['title'])
+                        liz = xbmcgui.ListItem(item2['title'])
                         liz.setInfo( type="Video", infoLabels={ "Title": item2['title'] })
                         liz.setInfo( type="Video", infoLabels={ "Episode": item2['episode'] })
                         liz.setInfo( type="Video", infoLabels={ "Season": item2['season'] })
