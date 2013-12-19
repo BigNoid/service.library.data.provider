@@ -166,10 +166,10 @@ class Main:
     
     
     def _fetch_recommended( self ):
-        self.fetch_recommended_movies()
-        self.fetch_recommended_episodes()
+        self._fetch_recommended_movies()
+        self._fetch_recommended_episodes()
 
-    def fetch_recommended_movies( self ):
+    def _fetch_recommended_movies( self ):
         file = self.open_file( 'recommendedmovies' )
         json_string = '{"jsonrpc": "2.0",  "id": 1, "method": "VideoLibrary.GetMovies", "params": {"properties": ["title", "originaltitle", "votes", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director"], "limits": {"end": %d},' % self.LIMIT
         json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "lastplayed"}, "filter": {"field": "inprogress", "operator": "true", "value": ""}}}' %json_string)
@@ -177,7 +177,7 @@ class Main:
         self.save_data( file, json_query )
         xbmcgui.Window( 10000 ).setProperty( "recommendedmovies",strftime( "%Y%m%d%H%M%S",gmtime() ) )
     
-    def fetch_recommended_episodes( self ):
+    def _fetch_recommended_episodes( self ):
         file = self.open_file( 'recommendedepisodes' )
         json_string = '{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.GetEpisodes", "params": { "properties": ["title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "streamdetails", "firstaired", "runtime"], "limits": {"end": %d},' %self.LIMIT
         json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"properties": ["title", "studio", "mpaa", "file", "art"], "sort": {"order": "descending", "method": "lastplayed"}, "filter": {"field": "inprogress", "operator": "true", "value": ""}, "limits": {"end": %d}}, "id": 1}' %self.LIMIT)
