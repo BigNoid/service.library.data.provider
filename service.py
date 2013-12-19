@@ -521,11 +521,7 @@ class Main:
         except:
             params = {}
         print params
-        self.LIMITOVERRIDE = int( params.get( "limit", "0" ) )
-        if self.LIMITOVERRIDE > 0:
-            self.LIMIT = int(self.LIMITOVERRIDE)
-        else:
-            self.LIMIT = int(__addon__.getSetting("limit"))
+        self.LIMIT = int(__addon__.getSetting("limit"))
         self.TYPE = params.get( "?type", "" )
         self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true'
         self.PLOT_ENABLE = __addon__.getSetting("plot_enable")  == 'true'
