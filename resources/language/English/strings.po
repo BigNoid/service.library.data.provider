@@ -76,3 +76,14 @@ msgctxt "#32015"
 msgid "Random Songs"
 msgstr ""
 
+msgctxt "#32016"
+msgid "Random Albums"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Recent Albums"
+msgstr ""
+
+msgctxt "#32018"
+msgid "Recommended Albums"
+msgstr ""
