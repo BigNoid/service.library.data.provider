@@ -69,13 +69,18 @@ class Main:
             self.parse_tvshows( 'recentepisodes', __localize__(32008) )
         elif self.TYPE == "randomepisodes":
             self.parse_tvshows( 'randomepisodes', __localize__(32007) )
-        # TODO Need to find out how to play an album    
-        #elif self.TYPE == "recentalbums":
-        #    self.fetch_albums( 'recentalbums' )
-        #elif self.TYPE == "randomalbums":
-        #    self.fetch_albums( 'randomalbums' )
+        elif self.TYPE == "randomalbums":
+            self.parse_albums( 'randomalbums', __localize__(32016) )
+        elif self.TYPE == "recentalbums":
+            self.parse_albums( 'recentalbums', __localize__(32017) )
+        elif self.TYPE == "recommendedalbums":
+            self.parse_albums( 'recommendedalbums', __localize__(32018) )
         elif self.TYPE == "randomsongs":
             self.parse_song( 'randomsongs', __localize__(32015) )
+            
+        # Play an albums
+        elif self.TYPE == "play_album":
+            self.play_album( self.ALBUM )
             
         if not self.TYPE:
             # clear our property, if another instance is already running it should stop now
@@ -103,6 +108,7 @@ class Main:
         self._fetch_random_movies()
         self._fetch_random_episodes()
         self._fetch_random_songs()
+        self._fetch_random_albums()
         
     def _fetch_random_movies( self ):
         file = self.open_file( 'randommovies' )
@@ -136,11 +142,20 @@ class Main:
         json_query = unicode(json_query, 'utf-8', errors='ignore')
         self.save_data( file, json_query )
         xbmcgui.Window( 10000 ).setProperty( "randomsongs",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        
+    def _fetch_random_albums( self ):
+        file = self.open_file( 'randomalbums' )
+        json_string = '{"jsonrpc": "2.0", "id": 1, "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"], "limits": {"end": %d},' %self.LIMIT
+        json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random"}}}' %json_string)
+        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        self.save_data( file, json_query )
+        xbmcgui.Window( 10000 ).setProperty( "randomalbums",strftime( "%Y%m%d%H%M%S",gmtime() ) )
 
         
     def _fetch_recent( self ):
         self._fetch_recent_movies()
         self._fetch_recent_episodes()
+        self._fetch_recent_albums()
         
     def _fetch_recent_movies( self ):
         file = self.open_file( 'recentmovies' )
@@ -163,11 +178,20 @@ class Main:
         json_query = unicode(json_query, 'utf-8', errors='ignore')
         self.save_data( file, json_query )
         xbmcgui.Window( 10000 ).setProperty( "recentepisodes",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        
+    def _fetch_recent_albums( self ):
+        file = self.open_file( 'recentalbums' )
+        json_string = '{"jsonrpc": "2.0", "id": 1, "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"], "limits": {"end": %d},' %self.LIMIT
+        json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded" }}}' %json_string)
+        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        self.save_data( file, json_query )
+        xbmcgui.Window( 10000 ).setProperty( "recentalbums",strftime( "%Y%m%d%H%M%S",gmtime() ) )
     
     
     def _fetch_recommended( self ):
         self._fetch_recommended_movies()
         self._fetch_recommended_episodes()
+        self._fetch_recommended_albums()
 
     def _fetch_recommended_movies( self ):
         file = self.open_file( 'recommendedmovies' )
@@ -195,6 +219,14 @@ class Main:
         
         self.save_data( file, json_query )
         xbmcgui.Window( 10000 ).setProperty( "recommendedepisodes",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        
+    def _fetch_recommended_albums( self ):
+        file = self.open_file( 'recommendedalbums' )
+        json_string = '{"jsonrpc": "2.0", "id": 1, "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"], "limits": {"end": %d},' %self.LIMIT
+        json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "playcount" }}}' %json_string)
+        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        self.save_data( file, json_query)
+        xbmcgui.Window( 10000 ).setProperty( "recommendedalbums",strftime( "%Y%m%d%H%M%S",gmtime() ) )
 
         
     def parse_movies(self, request, list_type):
@@ -409,6 +441,46 @@ class Main:
         del json_query
         xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
         
+    def parse_albums (self, request, list_type):
+        json_query = self.load_file( request )
+        if json_query:
+            json_query = simplejson.loads(json_query)
+            if json_query.has_key('result') and json_query['result'].has_key('albums'):
+                count = 0
+                for item in json_query['result']['albums']:
+                    count += 1
+                    rating = str(item['rating'])
+                    if rating == '48':
+                        rating = ''
+                    liz = xbmcgui.ListItem(item['title'])
+                    liz.setInfo( type="Music", infoLabels={ "Title": item['title'] })
+                    liz.setInfo( type="Music", infoLabels={ "Artist": item['artist'] })
+                    liz.setInfo( type="Music", infoLabels={ "Genre": " / ".join(item['genre']) })
+                    liz.setInfo( type="Music", infoLabels={ "Year": item['year'] })
+                    liz.setInfo( type="Music", infoLabels={ "Rating": rating })
+                    liz.setProperty("Album_Mood", " / ".join(item['mood']) )
+                    liz.setProperty("Album_Style", " / ".join(item['style']) )
+                    liz.setProperty("Album_Theme", " / ".join(item['theme']) )
+                    liz.setProperty("Album_Type", " / ".join(item['type']) )
+                    liz.setProperty("Album_Label", item['albumlabel'])
+                    liz.setProperty("Album_Description", item['description'])
+
+                    liz.setThumbnailImage(item['thumbnail'])
+                    liz.setIconImage('DefaultAlbumCover.png')
+                    liz.setProperty("fanart_image", item['fanart'])
+                    
+                    # Path will call plugin again, with the album id
+                    path = sys.argv[0] + "?type=play_album&album=" + str(item['albumid'])
+                    
+                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=path,listitem=liz,isFolder=False)
+        del json_query
+        xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
+        
+    def play_album( self, album ):
+        xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "albumid": %d } }, "id": 1 }' % int(album) )
+        # Return ResolvedUrl as failed, as we've taken care of what to play
+        xbmcplugin.setResolvedUrl( handle=int( sys.argv[1]), succeeded=False, listitem=xbmcgui.ListItem() )
+        
     def load_file(self, request):
         path = os.path.join( __datapath__, request + ".json" )
         if not xbmcvfs.exists( path ):
@@ -476,45 +548,9 @@ class Main:
             self._fetch_recommended_episodes()
             self._fetch_recent_movies()
             self._fetch_recent_episodes()
-                    
-            
-    def fetch_albums(self, request):
-        if not xbmc.abortRequested:
-            json_string = '{"jsonrpc": "2.0", "id": 1, "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"], "limits": {"end": %d},' %self.LIMIT
-            if request == 'recommendedalbums':
-                json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "playcount" }}}' %json_string)
-            elif request == 'recentalbums':
-                json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "dateadded" }}}' %json_string)
-            else:
-                json_query = xbmc.executeJSONRPC('%s "sort": {"method": "random"}}}' %json_string)
-            json_query = unicode(json_query, 'utf-8', errors='ignore')
-            json_query = simplejson.loads(json_query)
-            if json_query.has_key('result') and json_query['result'].has_key('albums'):
-                count = 0
-                for item in json_query['result']['albums']:
-                    count += 1
-                    rating = str(item['rating'])
-                    if rating == '48':
-                        rating = ''
-                    liz = xbmcgui.ListItem(item['title'])
-                    liz.setInfo( type="Music", infoLabels={ "Title": item['title'] })
-                    liz.setInfo( type="Music", infoLabels={ "Artist": item['artist'] })
-                    liz.setInfo( type="Music", infoLabels={ "Genre": " / ".join(item['genre']) })
-                    liz.setInfo( type="Music", infoLabels={ "Year": item['year'] })
-                    liz.setInfo( type="Music", infoLabels={ "Rating": rating })
-                    liz.setProperty("Album_Mood", " / ".join(item['mood']) )
-                    liz.setProperty("Album_Style", " / ".join(item['style']) )
-                    liz.setProperty("Album_Theme", " / ".join(item['theme']) )
-                    liz.setProperty("Album_Type", " / ".join(item['type']) )
-                    liz.setProperty("Album_Label", item['albumlabel'])
-                    liz.setProperty("Album_Description", item['description'])
-
-                    liz.setThumbnailImage(item['thumbnail'])
-                    liz.setIconImage('DefaultAlbumCover.png')
-                    liz.setProperty("fanart_image", item['fanart'])
-                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=play,listitem=liz,isFolder=False)
-            del json_query
-            xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
+        elif type == 'music':
+            self._fetch_recommended_albums()
+            self._fetch_recent_albums()
             
     def _parse_argv( self ):
         try:
@@ -524,6 +560,7 @@ class Main:
         print params
         self.LIMIT = int(__addon__.getSetting("limit"))
         self.TYPE = params.get( "?type", "" )
+        self.ALBUM = params.get( "album", "" )
         self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true'
         self.PLOT_ENABLE = __addon__.getSetting("plot_enable")  == 'true'
         self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true'
