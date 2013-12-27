@@ -279,7 +279,7 @@ class Main:
                     liz.setIconImage('DefaultVideoCover.png')
                     liz.setProperty("fanart_image", art.get('fanart', ''))
                     for key, value in item['streamdetails'].iteritems():
-                        for stream in value:
+                        for stream in str(value):
                             liz.addStreamInfo( key, stream ) 
 
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
@@ -342,7 +342,7 @@ class Main:
                         liz.setIconImage('DefaultTVShows.png')
                         liz.setProperty("fanart_image", art2.get('tvshow.fanart',''))
                         for key, value in item2['streamdetails'].iteritems():
-                            for stream in value:
+                            for stream in str(value):
                                 liz.addStreamInfo( key, stream ) 
                         
                         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item2['file'],listitem=liz,isFolder=False)
@@ -396,7 +396,7 @@ class Main:
                     liz.setIconImage('DefaultTVShows.png')
                     liz.setProperty("fanart_image", art.get('tvshow.fanart',''))
                     for key, value in item['streamdetails'].iteritems():
-                        for stream in value:
+                        for stream in str(value):
                             liz.addStreamInfo( key, stream ) 
 
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
