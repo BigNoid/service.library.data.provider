@@ -321,7 +321,7 @@ class Main:
                             plot = __localize__(32014)
                         else:
                             plot = item2['plot']
-                        art = item['art']
+                        art = item2['art']
                         liz = xbmcgui.ListItem(item2['title'])
                         liz.setInfo( type="Video", infoLabels={ "Title": item2['title'] })
                         liz.setInfo( type="Video", infoLabels={ "Episode": item2['episode'] })
@@ -398,7 +398,7 @@ class Main:
                     for key, value in item['streamdetails'].iteritems():
                         for stream in str(value):
                             liz.addStreamInfo( key, stream ) 
-
+                    print item['firstaired']
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
         del json_query
         xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
@@ -453,6 +453,7 @@ class Main:
                     liz.setProperty("Album_Type", " / ".join(item['type']) )
                     liz.setProperty("Album_Label", item['albumlabel'])
                     liz.setProperty("Album_Description", item['description'])
+                    liz.setProperty("type", list_type)
 
                     liz.setThumbnailImage(item['thumbnail'])
                     liz.setIconImage('DefaultAlbumCover.png')
