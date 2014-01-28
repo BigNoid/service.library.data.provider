@@ -279,7 +279,7 @@ class Main:
                     liz.setIconImage('DefaultVideoCover.png')
                     liz.setProperty("fanart_image", art.get('fanart', ''))
                     for key, value in item['streamdetails'].iteritems():
-                        for stream in str(value):
+                        for stream in value:
                             liz.addStreamInfo( key, stream ) 
 
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
@@ -337,12 +337,12 @@ class Main:
                         liz.setProperty("resumetime", str(item2['resume']['position']))
                         liz.setProperty("totaltime", str(item2['resume']['total']))
                         liz.setProperty("type", list_type)
-                        liz.setArt({'poster': art.get('tvshow.poster', ''), 'banner': art.get('tvshow.banner', ''), 'clearlogo': art.get('clearlogo', ''), 'clearart': art.get('clearart', ''), 'landscape': art.get('landscape', '')})
+                        liz.setArt({'poster': art.get('tvshow.poster', ''), 'banner': art.get('tvshow.banner', ''), 'clearlogo': art.get('tvshow.clearlogo', ''), 'clearart': art.get('tvshow.clearart', ''), 'landscape': art.get('landscape', '')})
                         liz.setThumbnailImage(art2.get('thumb',''))
                         liz.setIconImage('DefaultTVShows.png')
                         liz.setProperty("fanart_image", art2.get('tvshow.fanart',''))
                         for key, value in item2['streamdetails'].iteritems():
-                            for stream in str(value):
+                            for stream in value:
                                 liz.addStreamInfo( key, stream ) 
                         
                         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item2['file'],listitem=liz,isFolder=False)
@@ -391,12 +391,12 @@ class Main:
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
                     liz.setProperty("type", list_type)
-                    liz.setArt({'poster': art.get('tvshow.poster', ''), 'banner': art.get('tvshow.banner', ''), 'clearlogo': art.get('clearlogo', ''), 'clearart': art.get('clearart', ''), 'landscape': art.get('landscape', '')})
+                    liz.setArt({'poster': art.get('tvshow.poster', ''), 'banner': art.get('tvshow.banner', ''), 'clearlogo': art.get('tvshow.clearlogo', ''), 'clearart': art.get('tvshow.clearart', ''), 'landscape': art.get('landscape', '')})
                     liz.setThumbnailImage(art.get('thumb',''))
                     liz.setIconImage('DefaultTVShows.png')
                     liz.setProperty("fanart_image", art.get('tvshow.fanart',''))
                     for key, value in item['streamdetails'].iteritems():
-                        for stream in str(value):
+                        for stream in value:
                             liz.addStreamInfo( key, stream ) 
                     print item['firstaired']
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
