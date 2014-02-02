@@ -250,7 +250,6 @@ class Main:
                     else:
                         plot = item['plot']
                     art = item['art']
-                    votes = '(' + item['votes'] + ' ' + xbmc.getLocalizedString(20350) + ')'
 
                     # create a list item
                     liz = xbmcgui.ListItem(item['title'])
@@ -265,7 +264,7 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Tagline": item['tagline'] })
                     liz.setInfo( type="Video", infoLabels={ "Duration": item['runtime']/60 })
                     liz.setInfo( type="Video", infoLabels={ "Rating": str(float(item['rating'])) })
-                    liz.setInfo( type="Video", infoLabels={ "Votes": votes })
+                    liz.setInfo( type="Video", infoLabels={ "Votes": item['votes'] })
                     liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                     liz.setInfo( type="Video", infoLabels={ "Director": " / ".join(item['director']) })
                     liz.setInfo( type="Video", infoLabels={ "Trailer": item['trailer'] })
@@ -398,7 +397,7 @@ class Main:
                     for key, value in item['streamdetails'].iteritems():
                         for stream in value:
                             liz.addStreamInfo( key, stream ) 
-                    print item['firstaired']
+
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=item['file'],listitem=liz,isFolder=False)
         del json_query
         xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
