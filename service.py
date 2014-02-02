@@ -304,8 +304,9 @@ class Main:
                             for item2 in json_query2['result']['episodes']:
                                 episode = ("%.2d" % float(item2['episode']))
                                 season = "%.2d" % float(item2['season'])
+                                episodeno = "s%se%s" %(season,episode)
                                 rating = str(round(float(item2['rating']),1))
-                                art2 = item2['art']
+                                
                         if (item2['resume']['position'] and item2['resume']['total']) > 0:
                             resume = "true"
                             played = '%s%%'%int((float(item2['resume']['position']) / float(item2['resume']['total'])) * 100)
@@ -321,6 +322,7 @@ class Main:
                         else:
                             plot = item2['plot']
                         art = item2['art']
+                        
                         liz = xbmcgui.ListItem(item2['title'])
                         liz.setInfo( type="Video", infoLabels={ "Title": item2['title'] })
                         liz.setInfo( type="Video", infoLabels={ "Episode": item2['episode'] })
@@ -333,6 +335,7 @@ class Main:
                         liz.setInfo( type="Video", infoLabels={ "Rating": str(float(item2['rating'])) })
                         liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                         liz.setInfo( type="Video", infoLabels={ "Playcount": item2['playcount'] })
+                        liz.setProperty("episodeno", episodeno)
                         liz.setProperty("resumetime", str(item2['resume']['position']))
                         liz.setProperty("totaltime", str(item2['resume']['total']))
                         liz.setProperty("type", list_type)
@@ -359,6 +362,7 @@ class Main:
                     count += 1
                     episode = ("%.2d" % float(item['episode']))
                     season = "%.2d" % float(item['season'])
+                    episodeno = "s%se%s" %(season,episode)
                     rating = str(round(float(item['rating']),1))
                     if (item['resume']['position'] and item['resume']['total']) > 0:
                         resume = "true"
@@ -387,6 +391,7 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Rating": str(float(item['rating'])) })
                     #liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
+                    liz.setProperty("episodeno", episodeno)
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
                     liz.setProperty("type", list_type)
