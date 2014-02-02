@@ -337,9 +337,9 @@ class Main:
                         liz.setProperty("totaltime", str(item2['resume']['total']))
                         liz.setProperty("type", list_type)
                         liz.setArt({'tvshow.poster': art.get('tvshow.poster', ''), 'banner': art.get('banner', ''), 'tvshow.clearlogo': art.get('tvshow.clearlogo', ''), 'tvshow.clearart': art.get('tvshow.clearart', ''), 'tvshow.landscape': art.get('tvshow.landscape', '')})
-                        liz.setThumbnailImage(art2.get('thumb',''))
+                        liz.setThumbnailImage(art.get('thumb',''))
                         liz.setIconImage('DefaultTVShows.png')
-                        liz.setProperty("fanart_image", art2.get('tvshow.fanart',''))
+                        liz.setProperty("fanart_image", art.get('tvshow.fanart',''))
                         for key, value in item2['streamdetails'].iteritems():
                             for stream in value:
                                 liz.addStreamInfo( key, stream ) 
