@@ -312,7 +312,7 @@ class Main:
                         liz.setInfo( type="Video", infoLabels={ "Episode": item2['episode'] })
                         liz.setInfo( type="Video", infoLabels={ "Season": item2['season'] })
                         liz.setInfo( type="Video", infoLabels={ "Studio": item['studio'][0] })
-                        liz.setInfo( type="Video", infoLabels={ "Premiered": item2['firstaired'][0] })
+                        liz.setInfo( type="Video", infoLabels={ "Premiered": item2['firstaired'] })
                         liz.setInfo( type="Video", infoLabels={ "Plot": plot })
                         liz.setInfo( type="Video", infoLabels={ "TVshowTitle": item2['showtitle'] })
                         liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item2['rating']),1)) })
