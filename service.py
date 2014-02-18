@@ -330,7 +330,7 @@ class Main:
                             for stream in value:
                                 liz.addStreamInfo( key, stream ) 
                         
-                        full_liz.append((item['file'], liz, False))
+                        full_liz.append((item2['file'], liz, False))
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
