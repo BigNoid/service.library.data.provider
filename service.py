@@ -341,9 +341,9 @@ class Main:
         if json_query:
             json_query = simplejson.loads(json_query)
             if json_query.has_key('result') and json_query['result'].has_key('episodes'):
+                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+                full_liz = list()
                 for item in json_query['result']['episodes']:
-                    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-                    full_liz = list()
                     episode = "%.2d" % float(item['episode'])
                     season = "%.2d" % float(item['season'])
                     episodeno = "s%se%s" %(season,episode)
