@@ -555,7 +555,7 @@ class Widgets_Player(xbmc.Player):
         xbmc.sleep(1000)
         # Set values based on the file content
         if (self.isPlayingAudio()):
-            self.mediatype = "music"  
+            self.type = "music"  
         else:
             if xbmc.getCondVisibility('VideoPlayer.Content(movies)'):
                 filename = ''
@@ -570,24 +570,23 @@ class Widgets_Player(xbmc.Player):
                             isMovie = False
                             break
                 if isMovie:
-                    self.mediatype = "movie"
+                    self.type = "movie"
             elif xbmc.getCondVisibility('VideoPlayer.Content(episodes)'):
                 # Check for tv show title and season to make sure it's really an episode
                 if xbmc.getInfoLabel('VideoPlayer.Season') != "" and xbmc.getInfoLabel('VideoPlayer.TVShowTitle') != "":
-                    self.mediatype = "episode"
+                    self.type = "episode"
 
     def onPlayBackEnded(self):
         self.onPlayBackStopped()
 
     def onPlayBackStopped(self):
-        if self.mediatype == 'movie':
+        if self.type == 'movie':
             self.action('movie')
-        elif self.mediatype == 'episode':
+        elif self.type == 'episode':
             self.action('episode')
-        elif self.mediatype == 'music':
+        elif self.type == 'music':
             self.action('music')
-        self.mediatype = ""
-
+        self.type = ""
     
 log('script version %s started' % __addonversion__)
 Main()
