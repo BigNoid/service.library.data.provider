@@ -421,7 +421,7 @@ class Main:
                         rating = ''
                     liz = xbmcgui.ListItem(item['title'])
                     liz.setInfo( type="Music", infoLabels={ "Title": item['title'] })
-                    liz.setInfo( type="Music", infoLabels={ "Artist": item['artist'] })
+                    liz.setInfo( type="Music", infoLabels={ "Artist": item['artist'][0] })
                     liz.setInfo( type="Music", infoLabels={ "Genre": " / ".join(item['genre']) })
                     liz.setInfo( type="Music", infoLabels={ "Year": item['year'] })
                     liz.setInfo( type="Music", infoLabels={ "Rating": rating })
