@@ -526,7 +526,6 @@ class Main:
             params = dict( arg.split( "=" ) for arg in sys.argv[ 2 ].split( "&" ) )
         except:
             params = {}
-        print params
         self.LIMIT = int(__addon__.getSetting("limit"))
         self.TYPE = params.get( "?type", "" )
         self.ALBUM = params.get( "album", "" )
