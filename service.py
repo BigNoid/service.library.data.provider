@@ -274,9 +274,9 @@ class Main:
                         for stream in value:
                             liz.addStreamInfo( key, stream ) 
                     full_liz.append((item['file'], liz, False))
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+                xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
-            xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
-            xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
         
     def parse_tvshows_recommended(self, request, list_type):
         json_query = self.load_file( request )
