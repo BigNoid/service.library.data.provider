@@ -6,9 +6,6 @@
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.simplejson" version="2.0.10"/>
     </requires>
-    <extension library="service.py" point="xbmc.python.pluginsource">
-        <provides>video</provides>
-    </extension>
 	<extension library="service.py" point="xbmc.service" start="login" />
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plugin for skins to provide library data throughout the skin.</summary>

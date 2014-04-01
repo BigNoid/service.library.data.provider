@@ -495,13 +495,13 @@ class Main:
         count = 0
         home_update = False
         while (not xbmc.abortRequested) and self.WINDOW.getProperty('LibraryDataProvider_Running') == 'true':
-            xbmc.sleep(500)
-            if not xbmc.Player().isPlayingVideo():
-                # Update random items
-                count += 1
-                if count == 1200: # 10 minutes
-                    self._fetch_random()
-                    count = 0    # reset counter
+            xbmc.sleep(1000)
+            #if not xbmc.Player().isPlayingVideo():
+            #    # Update random items
+            #    count += 1
+            #    if count == 1200: # 10 minutes
+            #        self._fetch_random()
+            #        count = 0    # reset counter
                     
     def _update(self, type):
         xbmc.sleep(1000)
@@ -520,6 +520,8 @@ class Main:
         elif type == 'music':
             self._fetch_recommended_albums()
             self._fetch_recent_albums()
+            
+        self._fetch_random()
             
     def _parse_argv( self ):
         try:
