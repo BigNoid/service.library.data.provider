@@ -99,6 +99,7 @@ class Main:
         
     def parse_movies(self, request, list_type):
         json_query = self._get_data( request )
+        count = 0
         if json_query:
             json_query = simplejson.loads(json_query)
             if json_query.has_key('result') and json_query['result'].has_key('movies'):
@@ -149,6 +150,10 @@ class Main:
                         for stream in value:
                             liz.addStreamInfo( key, stream ) 
                     full_liz.append((item['file'], liz, False))
+                    count += 1
+                    if count == self.LIMIT:
+                        break
+                        
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
@@ -165,8 +170,6 @@ class Main:
                 for item in json_query['result']['tvshows']:
                     if xbmc.abortRequested:
                         break
-                    count += 1
-                    #json_query2 = self.load_file( str( item['tvshowid'] ) )
                     json_query2 = self.WINDOW.getProperty( "recommendedepisodes-data-" + str( item['tvshowid'] ) )
                     if json_query:
                         json_query2 = simplejson.loads(json_query2)
@@ -211,6 +214,12 @@ class Main:
                                 liz.addStreamInfo( key, stream ) 
                         
                         full_liz.append((item2['file'], liz, False))
+                        
+                        count += 1
+                        if count == self.LIMIT:
+                            break
+                    if count == self.LIMIT:
+                        break
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
@@ -223,6 +232,7 @@ class Main:
             if json_query.has_key('result') and json_query['result'].has_key('episodes'):
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
                 full_liz = list()
+                count = 0
                 for item in json_query['result']['episodes']:
                     episode = "%.2d" % float(item['episode'])
                     season = "%.2d" % float(item['season'])
@@ -257,6 +267,9 @@ class Main:
                         for stream in value:
                             liz.addStreamInfo( key, stream ) 
                     full_liz.append((item['file'], liz, False))
+                    count += 1
+                    if count == self.LIMIT:
+                        break
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
@@ -266,6 +279,7 @@ class Main:
         if json_query:
             json_string = '{"jsonrpc": "2.0", "id": 1, "method": "AudioLibrary.GetSongs", "params": {"properties": ["title", "playcount", "genre", "artist", "album", "year", "file", "thumbnail", "fanart", "rating"], "filter": {"field": "playcount", "operator": "lessthan", "value": "1"}, "limits": {"end": %d},' %self.LIMIT
             json_query = simplejson.loads(json_query)
+            count = 0
             if json_query.has_key('result') and json_query['result'].has_key('songs'):
                 xbmcplugin.setContent(int(sys.argv[1]), 'songs')
                 full_liz = list()
@@ -284,6 +298,9 @@ class Main:
                     liz.setProperty("fanart_image", item['fanart'])
 
                     full_liz.append((item['file'], liz, False))
+                    count += 1
+                    if count == self.LIMIT:
+                        break
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
@@ -295,6 +312,7 @@ class Main:
             if json_query.has_key('result') and json_query['result'].has_key('albums'):
                 xbmcplugin.setContent(int(sys.argv[1]), 'albums')
                 full_liz = list()
+                count = 0
                 for item in json_query['result']['albums']:
                     rating = str(item['rating'])
                     if rating == '48':
@@ -321,6 +339,10 @@ class Main:
                     path = sys.argv[0] + "?type=play_album&album=" + str(item['albumid'])
                     
                     full_liz.append((path, liz, False))
+                    count += 1
+                    if count == self.LIMIT:
+                        break
+
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
                 xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
             del json_query
@@ -364,7 +386,8 @@ class Main:
         self.ALBUM = params.get( "album", "" )
         self.USECACHE = params.get( "reload", False )
         if self.USECACHE is not False:
-            self.USECACHE == True
+            self.USECACHE = True
+        self.LIMIT = int( params.get( "limit", "-1" ) )
         global PLOT_ENABLE 
         PLOT_ENABLE = __addon__.getSetting("plot_enable")  == 'true'
         self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true'

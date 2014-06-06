@@ -33,6 +33,9 @@ Available infolabels:
 Most of the usual video library infolabels. 
 ListItem.Property(type) shows with what option the script was run.
 
+Limiting results:
+To only return partial results, add the parameter "limit", for example limit=5.
+
 TODO:
 Artist/Musicvideo/Addons support.
 
