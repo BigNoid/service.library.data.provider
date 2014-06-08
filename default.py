@@ -121,6 +121,8 @@ class Main:
                         country = item['country'][0]
                     else:
                         country = ""
+                    cast = self._get_cast( item['cast'] )
+                    
                     # create a list item
                     liz = xbmcgui.ListItem(item['title'])
                     liz.setInfo( type="Video", infoLabels={ "Title": item['title'] })
@@ -136,6 +138,9 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Votes": item['votes'] })
                     liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                     liz.setInfo( type="Video", infoLabels={ "Director": " / ".join(item['director']) })
+                    liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item['writer']) })
+                    liz.setInfo( type="Video", infoLabels={ "Cast": cast[0] })
+                    liz.setInfo( type="Video", infoLabels={ "CastAndRole": cast[1] })
                     liz.setInfo( type="Video", infoLabels={ "Trailer": item['trailer'] })
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
                     liz.setProperty("resumetime", str(item['resume']['position']))
@@ -190,6 +195,8 @@ class Main:
                             studio = item['studio'][0]
                         else:
                             studio = ""
+                        cast = self._get_cast( item2['cast'] )
+                        
                         liz = xbmcgui.ListItem(item2['title'])
                         liz.setInfo( type="Video", infoLabels={ "Title": item2['title'] })
                         liz.setInfo( type="Video", infoLabels={ "Episode": item2['episode'] })
@@ -201,6 +208,9 @@ class Main:
                         liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item2['rating']),1)) })
                         liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                         liz.setInfo( type="Video", infoLabels={ "Playcount": item2['playcount'] })
+                        liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item2['writer']) })
+                        liz.setInfo( type="Video", infoLabels={ "Cast": cast[0] })
+                        liz.setInfo( type="Video", infoLabels={ "CastAndRole": cast[1] })
                         liz.setProperty("episodeno", episodeno)
                         liz.setProperty("resumetime", str(item2['resume']['position']))
                         liz.setProperty("totaltime", str(item2['resume']['total']))
@@ -244,6 +254,8 @@ class Main:
                         plot = __localize__(32014)
                     else:
                         plot = item['plot']
+                    cast = self._get_cast( item['cast'] )
+                    
                     liz = xbmcgui.ListItem(item['title'])
                     liz.setInfo( type="Video", infoLabels={ "Title": item['title'] })
                     liz.setInfo( type="Video", infoLabels={ "Episode": item['episode'] })
@@ -255,6 +267,9 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item['rating']),1)) })
                     #liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
+                    liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item['writer']) })
+                    liz.setInfo( type="Video", infoLabels={ "Cast": cast[0] })
+                    liz.setInfo( type="Video", infoLabels={ "CastAndRole": cast[1] })
                     liz.setProperty("episodeno", episodeno)
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
@@ -351,6 +366,14 @@ class Main:
         xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "method": "Player.Open", "params": { "item": { "albumid": %d } }, "id": 1 }' % int(album) )
         # Return ResolvedUrl as failed, as we've taken care of what to play
         xbmcplugin.setResolvedUrl( handle=int( sys.argv[1]), succeeded=False, listitem=xbmcgui.ListItem() )
+        
+    def _get_cast( self, castData ):
+        listCast = []
+        listCastAndRole = []
+        for castmember in castData:
+            listCast.append( castmember["name"] )
+            listCastAndRole.append( (castmember["name"], castmember["role"]) ) 
+        return [listCast, listCastAndRole]
         
     def _get_data( self, request ):
         if request == "randommovies":
