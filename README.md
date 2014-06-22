@@ -15,7 +15,7 @@ Load a list with this content tag to have the list use cached data automatically
 <content target="video">plugin://service.library.data.provider?type=randommovies&amp;reload=$INFO[Window.Property(randommovies)]</content>
 
 To view within the library, create a link omitting the reload parameter:
-<onclick>ActivateWindow(Videos,plugin://service.library.data.provider?type=randommovies,return</onclick>
+<onclick>ActivateWindow(Videos,plugin://service.library.data.provider?type=randommovies,return)</onclick>
 
 Available tags:
 -   randommovies
@@ -24,6 +24,7 @@ Available tags:
 -   recommendedepisodes
 -   recentepisodes
 -   randomepisodes
+-   recentvideos (movies and episodes)
 -   randomsongs
 -   randomalbums
 -   recentalbums
