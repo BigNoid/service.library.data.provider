@@ -101,6 +101,7 @@ class Main:
         # Play an albums
         elif self.TYPE == "play_album":
             self.play_album( self.ALBUM )
+            return
             
         if not self.TYPE:
             # Show a root menu
