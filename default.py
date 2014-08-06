@@ -77,9 +77,6 @@ class Main:
         elif self.TYPE == "randomepisodes":
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             self.parse_tvshows( 'randomepisodes', 32007, full_liz )
-        elif self.TYPE == "resumeepisodes":
-            xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-            self.parse_tvshows( 'resumeepisodes', 32010, full_liz )
         elif self.TYPE == "recentvideos" :
             listA = []
             listB = []
@@ -93,8 +90,8 @@ class Main:
             listB = []
             dateListA = []
             dateListB = []
-            self.parse_movies( 'recommendedmovies', 32006, listA, dateListA, "dateadded" )
-            self.parse_tvshows( 'resumeepisodes', 32010, listB, dateListB, "dateadded" )
+            self.parse_movies( 'recommendedmovies', 32006, listA, dateListA, "lastplayed" )
+            self.parse_tvshows_recommended( 'recommendedepisodes', 32010, listB, dateListB, "lastplayed", True )
             full_liz = self._combine_by_date( listA, dateListA, listB, dateListB )
         elif self.TYPE == "randomalbums":
             xbmcplugin.setContent(int(sys.argv[1]), 'albums')
@@ -203,7 +200,7 @@ class Main:
             
             del json_query
         
-    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None):
+    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None, inProgress = False):
         json_query = self._get_data( request )
         while json_query == "LOADING":
             xbmc.sleep( 100 )
@@ -225,6 +222,10 @@ class Main:
                                 season = "%.2d" % float(item2['season'])
                                 episodeno = "s%se%s" %(season,episode)
                                 break
+                                
+                        if inProgress and item2['resume']['position'] == 0:
+                            continue
+                            
                         watched = False
                         if item2['playcount'] >= 1:
                             watched = True
@@ -270,7 +271,7 @@ class Main:
                         full_liz.append((item2['file'], liz, False))
                         
                         if date_type is not None:
-                            date_liz.append( item[date_type] )
+                            date_liz.append( item2[date_type] )
                         
                         count += 1
                         if count == self.LIMIT:
@@ -470,8 +471,6 @@ class Main:
             return LIBRARY._fetch_recent_episodes( self.USECACHE )
         elif request == "recommendedepisodes":
             return LIBRARY._fetch_recommended_episodes( self.USECACHE )
-        elif request == "resumeepisodes":
-            return LIBRARY._fetch_resume_episodes( self.USECACHE )
 
         elif request == "randomalbums":
             return LIBRARY._fetch_random_albums( self.USECACHE )
