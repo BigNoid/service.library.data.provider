@@ -77,6 +77,9 @@ class Main:
         elif self.TYPE == "randomepisodes":
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             self.parse_tvshows( 'randomepisodes', 32007, full_liz )
+        elif self.TYPE == "resumeepisodes":
+            xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+            self.parse_tvshows( 'resumeepisodes', 32010, full_liz )
         elif self.TYPE == "recentvideos" :
             listA = []
             listB = []
@@ -84,6 +87,14 @@ class Main:
             dateListB = []
             self.parse_movies( 'recentmovies', 32005, listA, dateListA, "dateadded" )
             self.parse_tvshows( 'recentepisodes', 32008, listB, dateListB, "dateadded" )
+            full_liz = self._combine_by_date( listA, dateListA, listB, dateListB )
+        elif self.TYPE == "resumevideos" :
+            listA = []
+            listB = []
+            dateListA = []
+            dateListB = []
+            self.parse_movies( 'recommendedmovies', 32006, listA, dateListA, "dateadded" )
+            self.parse_tvshows( 'resumeepisodes', 32010, listB, dateListB, "dateadded" )
             full_liz = self._combine_by_date( listA, dateListA, listB, dateListB )
         elif self.TYPE == "randomalbums":
             xbmcplugin.setContent(int(sys.argv[1]), 'albums')
@@ -459,6 +470,8 @@ class Main:
             return LIBRARY._fetch_recent_episodes( self.USECACHE )
         elif request == "recommendedepisodes":
             return LIBRARY._fetch_recommended_episodes( self.USECACHE )
+        elif request == "resumeepisodes":
+            return LIBRARY._fetch_resume_episodes( self.USECACHE )
 
         elif request == "randomalbums":
             return LIBRARY._fetch_random_albums( self.USECACHE )
