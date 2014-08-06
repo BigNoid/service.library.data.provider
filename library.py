@@ -221,24 +221,6 @@ class LibraryFunctions():
         self.WINDOW.setProperty( "resumevideos",strftime( "%Y%m%d%H%M%S",gmtime() ) )
         
         return json_query
-
-    def _fetch_resume_episodes( self, useCache = False ):
-        data = self._get_data( "resumeepisodes", useCache )
-        if data is not None:
-            return data
-            
-        # Set that we're getting updated data
-        self.WINDOW.setProperty( "resumeepisodes-data", "LOADING" )
-        
-        json_string = '{"jsonrpc": "2.0",  "id": 1, "method": "VideoLibrary.GetEpisodes", "params": {"properties": ["title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "streamdetails", "firstaired", "runtime", "writer", "cast", "dateadded", "lastplayed"], "limits": {"end": %d},' %self.LIMIT
-        json_query = xbmc.executeJSONRPC('%s "sort": {"order": "descending", "method": "lastplayed"}, "filter": {"field": "inprogress", "operator": "true", "value": ""}}}' %json_string)
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
-        
-        self.WINDOW.setProperty( "resumeepisodes-data", json_query )
-        self.WINDOW.setProperty( "resumeepisodes",strftime( "%Y%m%d%H%M%S",gmtime() ) )
-        self.WINDOW.setProperty( "resumevideos",strftime( "%Y%m%d%H%M%S",gmtime() ) )
-        
-        return json_query
     
     def _fetch_recommended_episodes( self, useCache = False ):
         data = self._get_data( "recommendedepisodes", useCache )
@@ -262,6 +244,7 @@ class LibraryFunctions():
         
         self.WINDOW.setProperty( "recommendedepisodes-data", json_query )
         self.WINDOW.setProperty( "recommendedepisodes",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        self.WINDOW.setProperty( "resumevideos",strftime( "%Y%m%d%H%M%S",gmtime() ) )
         
         return json_query
         
