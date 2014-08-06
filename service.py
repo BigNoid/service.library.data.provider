@@ -115,12 +115,14 @@ class Main:
         elif type == 'episode':
             LIBRARY._fetch_recommended_episodes()
             LIBRARY._fetch_recent_episodes()
+            LIBRARY._fetch_resume_episodes()
         elif type == 'video':
             #only on db update
             LIBRARY._fetch_recommended_movies()
             LIBRARY._fetch_recommended_episodes()
             LIBRARY._fetch_recent_movies()
             LIBRARY._fetch_recent_episodes()
+            LIBRARY._fetch_resume_episodes()
         elif type == 'music':
             LIBRARY._fetch_recommended_albums()
             LIBRARY._fetch_recent_albums()
