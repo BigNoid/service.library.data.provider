@@ -98,7 +98,7 @@ class Main:
             xbmcplugin.setContent(int(sys.argv[1]), 'songs')
             self.parse_song( 'randomsongs', 32015, full_liz )
         elif self.TYPE == 'playliststats':
-            if ".xsp" in self.id:
+            if (".xsp" in self.id) and ("special://" in self.id):
                 startindex = self.id.find("special://")
                 endindex = self.id.find(".xsp")
   #              Notify("found smart playlist. start: %i end: %i" % (startindex, endindex))
@@ -134,8 +134,9 @@ class Main:
                 liz.setIconImage( "DefaultFolder.png" )
                 full_liz.append( ( "plugin://service.library.data.provider?type=" + item[1], liz, True ) )
 
-        xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
-        xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
+        if not self.TYPE == "playliststats":
+			xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+			xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
                 
             
     def _init_vars(self):
