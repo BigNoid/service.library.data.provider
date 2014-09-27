@@ -97,6 +97,28 @@ class Main:
         elif self.TYPE == "randomsongs":
             xbmcplugin.setContent(int(sys.argv[1]), 'songs')
             self.parse_song( 'randomsongs', 32015, full_liz )
+        elif self.TYPE == 'playliststats':
+            if ".xsp" in self.id:
+                startindex = self.id.find("special://")
+                endindex = self.id.find(".xsp")
+  #              Notify("found smart playlist. start: %i end: %i" % (startindex, endindex))
+                if (startindex > 0) and (endindex > 0):
+                    playlistpath = self.id[startindex:endindex + 4]
+                    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
+                    json_query = unicode(json_query, 'utf-8', errors='ignore')
+                    json_response = simplejson.loads(json_query)
+                    played = 0
+                    inprogress = 0
+                    numitems = json_response["result"]["limits"]["total"]
+                    for item in json_response["result"]["files"]:
+                        if item["playcount"] > 0:
+                            played += 1
+                        if item["resume"]["position"] > 0:
+                            inprogress += 1
+                    self.WINDOW.setProperty('PlaylistWatched', str(played))
+                    self.WINDOW.setProperty('PlaylistCount', str(numitems))        # Play an albums
+                    self.WINDOW.setProperty('PlaylistInProgress', str(inprogress))
+                    self.WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
             
         # Play an albums
         elif self.TYPE == "play_album":
@@ -478,6 +500,7 @@ class Main:
         self.TYPE = params.get( "?type", "" )
         self.ALBUM = params.get( "album", "" )
         self.USECACHE = params.get( "reload", False )
+        self.id = params.get( "id", "" )
         if self.USECACHE is not False:
             self.USECACHE = True
         self.LIMIT = int( params.get( "limit", "-1" ) )
