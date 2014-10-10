@@ -200,6 +200,7 @@ class Main:
                     liz.setArt(item['art'])
                     liz.setThumbnailImage(item['art'].get('poster', ''))
                     liz.setIconImage('DefaultVideoCover.png')
+                    liz.setProperty("dbid", str(item['movieid']))
                     liz.setProperty("fanart_image", item['art'].get('fanart', ''))
                     for key, value in item['streamdetails'].iteritems():
                         for stream in value:
@@ -275,6 +276,7 @@ class Main:
                         liz.setThumbnailImage(item2['art'].get('thumb',''))
                         liz.setIconImage('DefaultTVShows.png')
                         liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart',''))
+                        liz.setProperty("dbid", str(item['episodeid']))
                         for key, value in item2['streamdetails'].iteritems():
                             for stream in value:
                                 liz.addStreamInfo( key, stream ) 
@@ -337,6 +339,7 @@ class Main:
                     liz.setArt(item['art'])
                     liz.setThumbnailImage(item['art'].get('thumb',''))
                     liz.setIconImage('DefaultTVShows.png')
+                    liz.setProperty("dbid", str(item['episodeid']))
                     liz.setProperty("fanart_image", item['art'].get('tvshow.fanart',''))
                     for key, value in item['streamdetails'].iteritems():
                         for stream in value:
@@ -374,7 +377,7 @@ class Main:
                     liz.setThumbnailImage(item['thumbnail'])
                     liz.setIconImage('DefaultMusicSongs.png')
                     liz.setProperty("fanart_image", item['fanart'])
-
+                    liz.setProperty("dbid", str(item['songid']))
                     full_liz.append((item['file'], liz, False))
                     
                     if date_type is not None:
@@ -416,6 +419,7 @@ class Main:
                     liz.setThumbnailImage(item['thumbnail'])
                     liz.setIconImage('DefaultAlbumCover.png')
                     liz.setProperty("fanart_image", item['fanart'])
+                    liz.setProperty("dbid", str(item['albumid']))
                     
                     # Path will call plugin again, with the album id
                     path = sys.argv[0] + "?type=play_album&album=" + str(item['albumid'])
