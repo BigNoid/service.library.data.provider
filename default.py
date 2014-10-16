@@ -98,9 +98,16 @@ class Main:
             xbmcplugin.setContent(int(sys.argv[1]), 'songs')
             self.parse_song( 'randomsongs', 32015, full_liz )
         elif self.TYPE == 'playliststats':
-            if (".xsp" in self.id) and ("special://" in self.id):
-                startindex = self.id.find("special://")
-                endindex = self.id.find(".xsp")
+            if (".xsp" in self.id):
+                root = "special://"
+                extension = ".xsp"
+            else:
+                root = "library://"
+                extension = ".xml"
+                self.id=self.id.replace("\\", "/" )    # fixes a bog of an old version of script.skinshortcuts that used "\" instead of "/" in windows
+            if (root in self.id) and (extension in self.id):
+                startindex = self.id.find(root)
+                endindex = self.id.find(extension)
   #              Notify("found smart playlist. start: %i end: %i" % (startindex, endindex))
                 if (startindex > 0) and (endindex > 0):
                     playlistpath = self.id[startindex:endindex + 4]
@@ -135,8 +142,8 @@ class Main:
                 full_liz.append( ( "plugin://service.library.data.provider?type=" + item[1], liz, True ) )
 
         if not self.TYPE == "playliststats":
-			xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
-			xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
+            xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+            xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
                 
             
     def _init_vars(self):
