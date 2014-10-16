@@ -291,7 +291,7 @@ class Main:
                         liz.setThumbnailImage(item2['art'].get('thumb',''))
                         liz.setIconImage('DefaultTVShows.png')
                         liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart',''))
-                        liz.setProperty("dbid", str(item['episodeid']))
+                        liz.setProperty("dbid", str(item2['episodeid']))
                         for key, value in item2['streamdetails'].iteritems():
                             for stream in value:
                                 liz.addStreamInfo( key, stream ) 
