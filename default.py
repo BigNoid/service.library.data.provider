@@ -98,27 +98,42 @@ class Main:
             xbmcplugin.setContent(int(sys.argv[1]), 'songs')
             self.parse_song( 'randomsongs', 32015, full_liz )
         elif self.TYPE == 'playliststats':
-            if (".xsp" in self.id) and ("special://" in self.id):
-                startindex = self.id.find("special://")
-                endindex = self.id.find(".xsp")
+            if (".xsp" in self.id):
+                root = "special://"
+                extension = ".xsp"
+            else:
+                root = "library://"
+                extension = ".xml"
+                self.id=self.id.replace("\\", "/" )    # fixes a bog of an old version of script.skinshortcuts that used "\" instead of "/" in windows
+            if (root in self.id) and (extension in self.id):
+                startindex = self.id.find(root)
+                endindex = self.id.find(extension)
   #              Notify("found smart playlist. start: %i end: %i" % (startindex, endindex))
                 if (startindex > 0) and (endindex > 0):
                     playlistpath = self.id[startindex:endindex + 4]
-                    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume"]}, "id": 1}' % (playlistpath))
+                    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume", "episode", "watchedepisodes"]}, "id": 1}' % (playlistpath))
                     json_query = unicode(json_query, 'utf-8', errors='ignore')
                     json_response = simplejson.loads(json_query)
                     played = 0
                     inprogress = 0
+                    episodes = 0
+                    watchedepisodes = 0
                     numitems = json_response["result"]["limits"]["total"]
                     for item in json_response["result"]["files"]:
                         if item["playcount"] > 0:
                             played += 1
                         if item["resume"]["position"] > 0:
                             inprogress += 1
+                        if item.has_key('episode'):
+                            episodes += item["episode"]
+                        if item.has_key('watchedepisodes'):
+                            watchedepisodes += item["watchedepisodes"]
                     self.WINDOW.setProperty('PlaylistWatched', str(played))
-                    self.WINDOW.setProperty('PlaylistCount', str(numitems))        # Play an albums
+                    self.WINDOW.setProperty('PlaylistCount', str(numitems))
                     self.WINDOW.setProperty('PlaylistInProgress', str(inprogress))
                     self.WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
+                    self.WINDOW.setProperty('PlaylistEpisodes', str(episodes))
+                    self.WINDOW.setProperty('PlaylistEpisodesUnWatched', str(episodes - watchedepisodes))
             
         # Play an albums
         elif self.TYPE == "play_album":
@@ -135,8 +150,8 @@ class Main:
                 full_liz.append( ( "plugin://service.library.data.provider?type=" + item[1], liz, True ) )
 
         if not self.TYPE == "playliststats":
-			xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
-			xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
+            xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+            xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
                 
             
     def _init_vars(self):
