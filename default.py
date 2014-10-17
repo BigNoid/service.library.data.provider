@@ -104,7 +104,7 @@ class Main:
                 endindex = lo.find(",",startindex+1)
                 if (endindex > 0):
                     playlistpath = self.id[startindex+1:endindex].strip()
-                    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume", "episode", "watchedepisodes"]}, "id": 1}' % (playlistpath))
+                    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume", "episode", "watchedepisodes", "tvshowid"]}, "id": 1}' % (playlistpath))
                     json_query = unicode(json_query, 'utf-8', errors='ignore')
                     json_response = simplejson.loads(json_query)
                     if (json_response.has_key("result")):
@@ -112,8 +112,14 @@ class Main:
                         inprogress = 0
                         episodes = 0
                         watchedepisodes = 0
+                        tvshows = []
+                        tvshowscount = 0
                         numitems = json_response["result"]["limits"]["total"]
                         for item in json_response["result"]["files"]:
+                            if item.has_key('tvshowid'):
+                                if item["tvshowid"] not in tvshows:
+                                    tvshows.append(item["tvshowid"])
+                                    tvshowscount += 1
                             if item["playcount"] > 0:
                                 played += 1
                             if item["resume"]["position"] > 0:
@@ -124,6 +130,7 @@ class Main:
                                 watchedepisodes += item["watchedepisodes"]
                         self.WINDOW.setProperty('PlaylistWatched', str(played))
                         self.WINDOW.setProperty('PlaylistCount', str(numitems))
+                        self.WINDOW.setProperty('PlaylistTVShowCount', str(tvshowscount))
                         self.WINDOW.setProperty('PlaylistInProgress', str(inprogress))
                         self.WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
                         self.WINDOW.setProperty('PlaylistEpisodes', str(abs(episodes)))
