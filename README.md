@@ -38,6 +38,7 @@ ListItem.Property(type) shows with what option the script was run.
 Playliststats is used when a playlist or videonode is set as the onclick action in the (Home) menu.
 Example:
 Put a list in your Home.xml:
+```xml
 				<control type="list" id="43260">
 					<posx>0</posx>
 					<posy>0</posy>
@@ -47,6 +48,7 @@ Put a list in your Home.xml:
 					<itemlayout/>
 					<content>plugin://service.library.data.provider?type=playliststats&amp;id=$INFO[Container(9000).ListItem.Property(Path)]</content>
 				</control>
+```
 The Path property has the onclick action defined. 
 9000 is the ID of the Home main menu.
 The following properties are available when the menu item containing the playlist or video node is highlighted:
