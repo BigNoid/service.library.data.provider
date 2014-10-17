@@ -143,9 +143,8 @@ class Main:
                 liz.setIconImage( "DefaultFolder.png" )
                 full_liz.append( ( "plugin://service.library.data.provider?type=" + item[1], liz, True ) )
 
-        if not self.TYPE == "playliststats":
-            xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
-            xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
+        xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+        xbmcplugin.endOfDirectory(handle= int(sys.argv[1]))
                 
             
     def _init_vars(self):
