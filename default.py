@@ -109,32 +109,38 @@ class Main:
                     json_response = simplejson.loads(json_query)
                     if (json_response.has_key("result")):
                         played = 0
+                        numitems = 0
                         inprogress = 0
                         episodes = 0
                         watchedepisodes = 0
                         tvshows = []
                         tvshowscount = 0
-                        numitems = json_response["result"]["limits"]["total"]
                         for item in json_response["result"]["files"]:
-                            if item.has_key('tvshowid'):
-                                if item["tvshowid"] not in tvshows:
-                                    tvshows.append(item["tvshowid"])
+                            if item.has_key('type'):
+                                if item["type"] == "episode":
+                                    episodes += 1
+                                    if item["playcount"] > 0:
+                                        watchedepisodes += 1
+                                    if item["tvshowid"] not in tvshows:
+                                        tvshows.append(item["tvshowid"])
+                                        tvshowscount += 1
+                                elif item["type"] == "tvshow":
+                                    episodes += item["episode"]
+                                    watchedepisodes += item["watchedepisodes"]
                                     tvshowscount += 1
-                            if item["playcount"] > 0:
-                                played += 1
-                            if item["resume"]["position"] > 0:
-                                inprogress += 1
-                            if item.has_key('episode'):
-                                episodes += item["episode"]
-                            if item.has_key('watchedepisodes'):
-                                watchedepisodes += item["watchedepisodes"]
+                                else:
+                                    numitems += 1
+                                    if item["playcount"] > 0:
+                                        played += 1
+                                    if item["resume"]["position"] > 0:
+                                        inprogress += 1
                         self.WINDOW.setProperty('PlaylistWatched', str(played))
                         self.WINDOW.setProperty('PlaylistCount', str(numitems))
                         self.WINDOW.setProperty('PlaylistTVShowCount', str(tvshowscount))
                         self.WINDOW.setProperty('PlaylistInProgress', str(inprogress))
                         self.WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
-                        self.WINDOW.setProperty('PlaylistEpisodes', str(abs(episodes)))
-                        self.WINDOW.setProperty('PlaylistEpisodesUnWatched', str(abs(episodes - watchedepisodes)))
+                        self.WINDOW.setProperty('PlaylistEpisodes', str(episodes))
+                        self.WINDOW.setProperty('PlaylistEpisodesUnWatched', str(episodes - watchedepisodes))
             
         # Play an albums
         elif self.TYPE == "play_album":
