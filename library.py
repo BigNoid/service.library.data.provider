@@ -218,6 +218,7 @@ class LibraryFunctions():
         
         self.WINDOW.setProperty( "recommendedmovies-data", json_query )
         self.WINDOW.setProperty( "recommendedmovies",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        self.WINDOW.setProperty( "resumevideos",strftime( "%Y%m%d%H%M%S",gmtime() ) )
         
         return json_query
     
@@ -243,6 +244,7 @@ class LibraryFunctions():
         
         self.WINDOW.setProperty( "recommendedepisodes-data", json_query )
         self.WINDOW.setProperty( "recommendedepisodes",strftime( "%Y%m%d%H%M%S",gmtime() ) )
+        self.WINDOW.setProperty( "resumevideos",strftime( "%Y%m%d%H%M%S",gmtime() ) )
         
         return json_query
         

@@ -117,7 +117,6 @@ class Main:
             LIBRARY._fetch_recent_episodes()
         elif type == 'video':
             #only on db update
-            LIBRARY._fetch_recommended_movies()
             LIBRARY._fetch_recommended_episodes()
             LIBRARY._fetch_recent_movies()
             LIBRARY._fetch_recent_episodes()

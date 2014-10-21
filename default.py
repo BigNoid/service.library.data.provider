@@ -85,6 +85,14 @@ class Main:
             self.parse_movies( 'recentmovies', 32005, listA, dateListA, "dateadded" )
             self.parse_tvshows( 'recentepisodes', 32008, listB, dateListB, "dateadded" )
             full_liz = self._combine_by_date( listA, dateListA, listB, dateListB )
+        elif self.TYPE == "resumevideos" :
+            listA = []
+            listB = []
+            dateListA = []
+            dateListB = []
+            self.parse_movies( 'recommendedmovies', 32006, listA, dateListA, "lastplayed" )
+            self.parse_tvshows_recommended( 'recommendedepisodes', 32010, listB, dateListB, "lastplayed", True )
+            full_liz = self._combine_by_date( listA, dateListA, listB, dateListB )
         elif self.TYPE == "randomalbums":
             xbmcplugin.setContent(int(sys.argv[1]), 'albums')
             self.parse_albums( 'randomalbums', 32016, full_liz )
@@ -237,7 +245,7 @@ class Main:
             
             del json_query
         
-    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None):
+    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None, inProgress = False):
         json_query = self._get_data( request )
         while json_query == "LOADING":
             xbmc.sleep( 100 )
@@ -259,6 +267,10 @@ class Main:
                                 season = "%.2d" % float(item2['season'])
                                 episodeno = "s%se%s" %(season,episode)
                                 break
+                                
+                        if inProgress and item2['resume']['position'] == 0:
+                            continue
+                            
                         watched = False
                         if item2['playcount'] >= 1:
                             watched = True
@@ -305,7 +317,7 @@ class Main:
                         full_liz.append((item2['file'], liz, False))
                         
                         if date_type is not None:
-                            date_liz.append( item[date_type] )
+                            date_liz.append( item2[date_type] )
                         
                         count += 1
                         if count == self.LIMIT:
