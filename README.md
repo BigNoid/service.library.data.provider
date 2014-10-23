@@ -39,15 +39,15 @@ Playliststats is used when a playlist or videonode is set as the onclick action 
 Example:
 Put a list in your Home.xml:
 ```xml
-				<control type="list" id="43260">
-					<posx>0</posx>
-					<posy>0</posy>
-					<width>1</width>
-					<height>1</height>
-					<focusedlayout/>
-					<itemlayout/>
-					<content>plugin://service.library.data.provider?type=playliststats&amp;id=$INFO[Container(9000).ListItem.Property(Path)]</content>
-				</control>
+<control type="list" id="43260">
+	<posx>0</posx>
+	<posy>0</posy>
+	<width>1</width>
+	<height>1</height>
+	<focusedlayout/>
+	<itemlayout/>
+	<content>plugin://service.library.data.provider?type=playliststats&amp;id=$INFO[Container(9000).ListItem.Property(Path)]</content>
+</control>
 ```
 The Path property has the onclick action defined. 
 9000 is the ID of the Home main menu.
