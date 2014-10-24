@@ -282,6 +282,7 @@ class Main:
 
     def parse_tvshows(self, request, list_type, full_liz, date_liz = None, date_type = None):
         json_query = self._get_data( request )
+        my_showID = []
         while json_query == "LOADING":
             xbmc.sleep( 100 )
             json_query = self._get_data( request )
@@ -290,54 +291,56 @@ class Main:
             if json_query.has_key('result') and json_query['result'].has_key('episodes'):
                 count = 0
                 for item in json_query['result']['episodes']:
-                    episode = "%.2d" % float(item['episode'])
-                    season = "%.2d" % float(item['season'])
-                    episodeno = "s%se%s" %(season,episode)
-                    watched = False
-                    if item['playcount'] >= 1:
-                        watched = True
-                    if not PLOT_ENABLE and not watched:
-                        plot = __localize__(32014)
-                    else:
-                        plot = item['plot']
-                    if "cast" in item:
-                        cast = self._get_cast( item['cast'] )
-                    
-                    liz = xbmcgui.ListItem(item['title'])
-                    liz.setInfo( type="Video", infoLabels={ "Title": item['title'] })
-                    liz.setInfo( type="Video", infoLabels={ "Episode": item['episode'] })
-                    liz.setInfo( type="Video", infoLabels={ "Season": item['season'] })
-                    #liz.setInfo( type="Video", infoLabels={ "Studio": item['studio'][0] })
-                    liz.setInfo( type="Video", infoLabels={ "Premiered": item['firstaired'] })
-                    liz.setInfo( type="Video", infoLabels={ "Plot": plot })
-                    liz.setInfo( type="Video", infoLabels={ "TVshowTitle": item['showtitle'] })
-                    liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item['rating']),1)) })
-                    #liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
-                    liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
-                    if "writer" in item:
-                        liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item['writer']) })
-                    if "cast" in item:
-                        liz.setInfo( type="Video", infoLabels={ "Cast": cast[0] })
-                        liz.setInfo( type="Video", infoLabels={ "CastAndRole": cast[1] })
-                    liz.setProperty("episodeno", episodeno)
-                    liz.setProperty("resumetime", str(item['resume']['position']))
-                    liz.setProperty("totaltime", str(item['resume']['total']))
-                    liz.setProperty("type", __localize__(list_type))
-                    liz.setArt(item['art'])
-                    liz.setThumbnailImage(item['art'].get('thumb',''))
-                    liz.setIconImage('DefaultTVShows.png')
-                    liz.setProperty("fanart_image", item['art'].get('tvshow.fanart',''))
-                    for key, value in item['streamdetails'].iteritems():
-                        for stream in value:
-                            liz.addStreamInfo( key, stream ) 
-                    full_liz.append((item['file'], liz, False))
-                    
-                    if date_type is not None:
-                        date_liz.append( item[date_type] )
-                    
-                    count += 1
-                    if count == self.LIMIT:
-                        break
+                    if item['tvshowid'] not in my_showID:
+                        my_showID.append(item['tvshowid'])
+                        episode = "%.2d" % float(item['episode'])
+                        season = "%.2d" % float(item['season'])
+                        episodeno = "s%se%s" %(season,episode)
+                        watched = False
+                        if item['playcount'] >= 1:
+                            watched = True
+                        if not PLOT_ENABLE and not watched:
+                            plot = __localize__(32014)
+                        else:
+                            plot = item['plot']
+                        if "cast" in item:
+                            cast = self._get_cast( item['cast'] )
+                        
+                        liz = xbmcgui.ListItem(item['title'])
+                        liz.setInfo( type="Video", infoLabels={ "Title": item['title'] })
+                        liz.setInfo( type="Video", infoLabels={ "Episode": item['episode'] })
+                        liz.setInfo( type="Video", infoLabels={ "Season": item['season'] })
+                        #liz.setInfo( type="Video", infoLabels={ "Studio": item['studio'][0] })
+                        liz.setInfo( type="Video", infoLabels={ "Premiered": item['firstaired'] })
+                        liz.setInfo( type="Video", infoLabels={ "Plot": plot })
+                        liz.setInfo( type="Video", infoLabels={ "TVshowTitle": item['showtitle'] })
+                        liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item['rating']),1)) })
+                        #liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
+                        liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
+                        if "writer" in item:
+                            liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item['writer']) })
+                        if "cast" in item:
+                            liz.setInfo( type="Video", infoLabels={ "Cast": cast[0] })
+                            liz.setInfo( type="Video", infoLabels={ "CastAndRole": cast[1] })
+                        liz.setProperty("episodeno", episodeno)
+                        liz.setProperty("resumetime", str(item['resume']['position']))
+                        liz.setProperty("totaltime", str(item['resume']['total']))
+                        liz.setProperty("type", __localize__(list_type))
+                        liz.setArt(item['art'])
+                        liz.setThumbnailImage(item['art'].get('thumb',''))
+                        liz.setIconImage('DefaultTVShows.png')
+                        liz.setProperty("fanart_image", item['art'].get('tvshow.fanart',''))
+                        for key, value in item['streamdetails'].iteritems():
+                            for stream in value:
+                                liz.addStreamInfo( key, stream ) 
+                        full_liz.append((item['file'], liz, False))
+                        
+                        if date_type is not None:
+                            date_liz.append( item[date_type] )
+                        
+                        count += 1
+                        if count == self.LIMIT:
+                            break
             del json_query
 
     def parse_song(self, request, list_type, full_liz, date_liz = None, date_type = None):
