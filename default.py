@@ -284,6 +284,8 @@ class Main:
                         liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item2['rating']),1)) })
                         liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                         liz.setInfo( type="Video", infoLabels={ "Playcount": item2['playcount'] })
+                        if "director" in item2:
+                            liz.setInfo( type="Video", infoLabels={ "Director": " / ".join(item2['director']) })
                         if "writer" in item2:
                             liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item2['writer']) })
                         if "cast" in item2:
@@ -348,6 +350,8 @@ class Main:
                     liz.setInfo( type="Video", infoLabels={ "Rating": str(round(float(item['rating']),1)) })
                     #liz.setInfo( type="Video", infoLabels={ "MPAA": item['mpaa'] })
                     liz.setInfo( type="Video", infoLabels={ "Playcount": item['playcount'] })
+                    if "director" in item:
+                        liz.setInfo( type="Video", infoLabels={ "Director": " / ".join(item['director']) })
                     if "writer" in item:
                         liz.setInfo( type="Video", infoLabels={ "Writer": " / ".join(item['writer']) })
                     if "cast" in item:
