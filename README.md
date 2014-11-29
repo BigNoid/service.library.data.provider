@@ -14,6 +14,9 @@ Include the following in your addon.xml
 Load a list with this content tag to have the list use cached data automatically refresh:
 `<content target="video">plugin://service.library.data.provider?type=randommovies&amp;reload=$INFO[Window.Property(randommovies)]</content>`
 
+To load a list with multiple content types, split the types with a + and include the window property for each type:
+`<content target="video">plugin://service.library.data.provider?type=randommovies+recentepisodes&amp;reload=$INFO[Window.Property(randommovies)]$INFO[Window.Property(recentepisodes)]</content>`
+
 To view within the library, create a link omitting the reload parameter:
 `<onclick>ActivateWindow(Videos,plugin://service.library.data.provider?type=randommovies,return)</onclick>`
 
