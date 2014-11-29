@@ -1,4 +1,4 @@
-plugin.library.data.provider
+service.library.data.provider
 ============================
 
 Python script for use with XBMC
@@ -32,6 +32,7 @@ Available tags:
 -	playliststats
 
 Available infolabels:
+
 ListItem.Property(type) shows with what option the script was run.
 
 Movies:
@@ -77,6 +78,7 @@ Episodes:
 -	ListItem.Title
 -	ListItem.Episode
 -	ListItem.Season
+- 	ListItem.Property(episodeno)
 -	ListItem.Studio
 -	ListItem.Premiered
 -	ListItem.Plot
@@ -112,6 +114,7 @@ Songs:
 -	ListItem.Icon `DefaultMusicSongs.png`
 -	ListItem.Thumb
 -	ListItem.Property(fanart_image)
+-	ListItem.Property(dbid)
 
 Albums:
 -	ListItem.Title
@@ -128,6 +131,7 @@ Albums:
 -	ListItem.Icon `DefaultAlbumCover.png`
 -	ListItem.Thumb
 -	ListItem.Property(fanart_image)
+-	ListItem.Property(dbid)
 
 Playliststats is used when a playlist or videonode is set as the onclick action in the (Home) menu.
 Example:
