@@ -58,7 +58,7 @@ Movies:
 -	ListItem.Property(totaltime)
 -	ListItem.Property(dbid)
 -	ListItem.Property(fanart_image)
--	ListItem.Icon //(DefaultVideoCover.png)
+-	ListItem.Icon `DefaultVideoCover.png`
 -	ListItem.Thumb
 -	ListItem.Art(poster)
 -	ListItem.Art(thumb)
@@ -93,7 +93,7 @@ Episodes:
 -	ListItem.Property(totaltime)
 -	ListItem.Property(dbid)
 -	ListItem.Property(fanart_image)
--	ListItem.Icon //(DefaultTVShows.png)
+-	ListItem.Icon `DefaultTVShows.png`
 -	ListItem.Thumb
 -	ListItem.Art(tvshow.poster)
 -	ListItem.Art(thumb)
@@ -109,7 +109,7 @@ Songs:
 -	ListItem.Year
 -	ListItem.Rating
 -	ListItem.Album
--	ListItem.Icon //(DefaultMusicSongs.png)
+-	ListItem.Icon `DefaultMusicSongs.png`
 -	ListItem.Thumb
 -	ListItem.Property(fanart_image)
 
@@ -125,7 +125,7 @@ Albums:
 -	ListItem.Property(Album_Type)
 -	ListItem.Property(Album_Label)
 -	ListItem.Property(Album_Description)
--	ListItem.Icon //(DefaultAlbumCover.png)
+-	ListItem.Icon `DefaultAlbumCover.png`
 -	ListItem.Thumb
 -	ListItem.Property(fanart_image)
 
