@@ -188,6 +188,8 @@ class LibraryFunctions():
             # Get all favourites and all unwatched shows, and store their intersection in fav_unwatched
             favs = json.loads(self.json_query("Favourites.GetFavourites", 
                                               False, properties=[], sort=None, query_filter=None, limit=None))
+            if favs['result']['favourites'] is None:
+                return None
             shows = json.loads(self.json_query("VideoLibrary.GetTVShows", unplayed=True, properties=self.tvshow_properties, limit=None))
             fav_unwatched = [ show for show in shows['result']['tvshows'] if show['title'] in 
                               set([ fav['title'] for fav in favs['result']['favourites'] if fav['type'] == 'window']) ]
