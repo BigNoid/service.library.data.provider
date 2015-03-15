@@ -73,11 +73,11 @@ class Main:
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "recommendedepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-                self.parse_tvshows_recommended( 'recommendedepisodes', 32020, full_liz )
+                self.parse_tvshows_recommended( 'recommendedepisodes', 32010, full_liz )
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "favouriteepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-                self.parse_tvshows_favourite( 'favouriteepisodes', 32010, full_liz )
+                self.parse_tvshows_favourite( 'favouriteepisodes', 32020, full_liz )
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "recentepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
