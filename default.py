@@ -73,7 +73,11 @@ class Main:
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "recommendedepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-                self.parse_tvshows_recommended( 'recommendedepisodes', 32010, full_liz )
+                self.parse_tvshows_recommended( 'recommendedepisodes', 32020, full_liz )
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+            elif type == "favouriteepisodes":
+                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+                self.parse_tvshows_favourite( 'favouriteepisodes', 32010, full_liz )
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "recentepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
@@ -163,7 +167,7 @@ class Main:
         if not self.TYPE:
             # Show a root menu
             full_liz = list()
-            items = [[32004, "randommovies"], [32005, "recentmovies"], [32006, "recommendedmovies"], [32007, "randomepisodes"], [32008, "recentepisodes"], [32010, "recommendedepisodes"], [32019, "recentvideos"], [32016, "randomalbums"], [32017, "recentalbums"], [32018, "recommendedalbums"], [32015, "randomsongs"]]
+            items = [[32004, "randommovies"], [32005, "recentmovies"], [32006, "recommendedmovies"], [32007, "randomepisodes"], [32008, "recentepisodes"], [32010, "recommendedepisodes"], [32020, "favouriteepisodes"], [32019, "recentvideos"], [32016, "randomalbums"], [32017, "recentalbums"], [32018, "recommendedalbums"], [32015, "randomsongs"]]
             for item in items:
                 liz = xbmcgui.ListItem( __localize__( item[0] ) )
                 liz.setIconImage( "DefaultFolder.png" )
@@ -250,7 +254,11 @@ class Main:
             
             del json_query
         
-    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None):
+    def parse_tvshows_favourite(self, request, list_type, full_liz, date_liz = None, date_type=None):
+        return self.parse_tvshows_recommended(request, list_type, full_liz, date_liz, date_type, favourites=True)
+
+    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz = None, date_type = None, favourites=False):
+        prefix = "recommended-episodes" if not favourites else "favouriteepisodes"
         json_query = self._get_data( request )
         while json_query == "LOADING":
             xbmc.sleep( 100 )
@@ -263,7 +271,7 @@ class Main:
                 for item in json_query['result']['tvshows']:
                     if xbmc.abortRequested:
                         break
-                    json_query2 = self.WINDOW.getProperty( "recommendedepisodes-data-" + str( item['tvshowid'] ) )
+                    json_query2 = self.WINDOW.getProperty( prefix + "-data-" + str( item['tvshowid'] ) )
                     if json_query:
                         json_query2 = simplejson.loads(json_query2)
                         if json_query2.has_key('result') and json_query2['result'] != None and json_query2['result'].has_key('episodes'):
@@ -524,6 +532,8 @@ class Main:
             return LIBRARY._fetch_recent_episodes( self.USECACHE )
         elif request == "recommendedepisodes":
             return LIBRARY._fetch_recommended_episodes( self.USECACHE )
+        elif request == "favouriteepisodes":
+            return LIBRARY._fetch_favourite_episodes( self.USECACHE )
 
         elif request == "randomalbums":
             return LIBRARY._fetch_random_albums( self.USECACHE )
