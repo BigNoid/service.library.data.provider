@@ -114,11 +114,13 @@ class Main:
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == 'playliststats':
                 lo = self.id.lower()
-                if ("activatewindow" in lo) and ("://" in lo) and ("," in lo):
+                if ("activatewindow" in lo) and ("," in lo):
                     startindex = lo.find(",")
                     endindex = lo.find(",",startindex+1)
                     if (endindex > 0):
-                        playlistpath = self.id[startindex+1:endindex].strip()
+                        # remove &quot; from path (if added by favorites)
+                        path = self.id.translate(None, '\"')
+                        playlistpath = path[startindex+1:endindex].strip()
                         json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume", "episode", "watchedepisodes", "tvshowid"]}, "id": 1}' % (playlistpath))
                         json_query = unicode(json_query, 'utf-8', errors='ignore')
                         json_response = simplejson.loads(json_query)
