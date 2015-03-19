@@ -118,7 +118,7 @@ class Main:
                     startindex = lo.find(",")
                     endindex = lo.find(",",startindex+1)
                     if (endindex > 0):
-                        # remove &quot; from path (if added by favorites)
+                        # remove &quot; from path (gets added by favorites)
                         path = self.id.translate(None, '\"')
                         playlistpath = path[startindex+1:endindex].strip()
                         json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["playcount", "resume", "episode", "watchedepisodes", "tvshowid"]}, "id": 1}' % (playlistpath))
