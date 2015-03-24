@@ -274,7 +274,7 @@ class Main:
                     if xbmc.abortRequested:
                         break
                     json_query2 = self.WINDOW.getProperty( prefix + "-data-" + str( item['tvshowid'] ) )
-                    if json_query:
+                    if json_query2:
                         json_query2 = simplejson.loads(json_query2)
                         if json_query2.has_key('result') and json_query2['result'] != None and json_query2['result'].has_key('episodes'):
                             for item2 in json_query2['result']['episodes']:
