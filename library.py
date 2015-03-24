@@ -47,11 +47,12 @@ class LibraryFunctions():
         
     def _get_data(self, query_type, useCache):
         # Check if data is being refreshed elsewhere
-        for count in range(31):
-            data = self.WINDOW.getProperty(query_type+"-data")
-            if data != "LOADING":
-                return data if (data or count) else None
-            xbmc.sleep(100)
+        if self.WINDOW.getProperty(query_type+"-data") == "LOADING":
+            for count in range(30):
+                xbmc.sleep(100)
+                data = self.WINDOW.getProperty(query_type+"-data")
+                if data != "LOADING":
+                    return data
         
         if useCache:
             # Check whether there is saved data
