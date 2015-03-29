@@ -212,3 +212,22 @@ class LibraryFunctions():
 
             return unicode(json.dumps(rv), 'utf-8', errors='ignore')
         return self._fetch_items(useCache, prefix="favouriteepisodes", queryFunc=query_favourite)
+
+    # Next unwatched episodes are next unwatched episode per show from shows that are in your library
+    def _fetch_next_unwatched_episodes(self, useCache = False):
+        def query_next_unwatched_episodes():
+            lastplayed_sort = {"order": "descending", "method": "lastplayed"}
+            shows = json.loads(self.json_query("VideoLibrary.GetTVShows", unplayed=True, properties=self.tvshow_properties, sort=lastplayed_sort, limit=None))
+            all_episodes = []
+            if 'result' in shows and 'tvshows' in shows['result']:
+                all_tvshow_ids = [tvshow['tvshowid'] for tvshow in shows['result']['tvshows']]
+                for show_id in all_tvshow_ids:
+                    episodenumber_sort = {"order": "ascending", "method": "episode"}
+                    episodes = json.loads(self.json_query("VideoLibrary.GetEpisodes", True, properties=self.tvepisode_properties,
+                                                          params={"tvshowid": show_id}, sort=episodenumber_sort, limit=1,
+                                                          query_filter=self.unplayed_filter))
+                    if 'result' in episodes and 'episodes' in episodes['result']:
+                        for item in episodes['result']['episodes']:
+                            all_episodes.append(item)
+            return unicode(json.dumps({"result": {"episodes": all_episodes}}), 'utf-8', errors='ignore')
+        return self._fetch_items(useCache, prefix="nextunwatchedepisodes", queryFunc=query_next_unwatched_episodes)
