@@ -87,6 +87,10 @@ class Main:
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
                 self.parse_tvshows( 'randomepisodes', 32007, full_liz )
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
+            elif type == "nextunwatchedepisodes":
+                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+                self.parse_tvshows( 'nextunwatchedepisodes', 32021, full_liz )
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]),full_liz)
             elif type == "recentvideos" :
                 listA = []
                 listB = []
@@ -536,6 +540,8 @@ class Main:
             return LIBRARY._fetch_recommended_episodes( self.USECACHE )
         elif request == "favouriteepisodes":
             return LIBRARY._fetch_favourite_episodes( self.USECACHE )
+        elif request == "nextunwatchedepisodes":
+            return LIBRARY._fetch_next_unwatched_episodes( self.USECACHE )
 
         elif request == "randomalbums":
             return LIBRARY._fetch_random_albums( self.USECACHE )
