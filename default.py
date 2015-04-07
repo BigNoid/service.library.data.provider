@@ -243,8 +243,16 @@ class Main:
                     liz.setProperty("dbid", str(item['movieid']))
                     liz.setProperty("fanart_image", item['art'].get('fanart', ''))
                     for key, value in item['streamdetails'].iteritems():
+                        hasVideo = False
                         for stream in value:
-                            liz.addStreamInfo( key, stream ) 
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo( key, stream )
+
+                        #if duration wasnt in the streaminfo try adding the scraped one
+                        if not hasVideo:
+                            stream = {'duration': item['runtime']}
+                            liz.addStreamInfo( "video", stream )
                     full_liz.append((item['file'], liz, False))
                     
                     if date_type is not None:
@@ -324,8 +332,16 @@ class Main:
                         liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart',''))
                         liz.setProperty("dbid", str(item2['episodeid']))
                         for key, value in item2['streamdetails'].iteritems():
+                            hasVideo = False
                             for stream in value:
-                                liz.addStreamInfo( key, stream ) 
+                                if 'video' in key:
+                                    hasVideo = True
+                                liz.addStreamInfo( key, stream )
+
+                            #if duration wasnt in the streaminfo try adding the scraped one
+                            if not hasVideo:
+                                stream = {'duration': item2['runtime']}
+                                liz.addStreamInfo( "video", stream )
                         
                         full_liz.append((item2['file'], liz, False))
                         
@@ -390,8 +406,16 @@ class Main:
                     liz.setProperty("dbid", str(item['episodeid']))
                     liz.setProperty("fanart_image", item['art'].get('tvshow.fanart',''))
                     for key, value in item['streamdetails'].iteritems():
+                        hasVideo = False
                         for stream in value:
-                            liz.addStreamInfo( key, stream ) 
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo( key, stream )
+
+                        #if duration wasnt in the streaminfo try adding the scraped one
+                        if not hasVideo:
+                            stream = {'duration': item['runtime']}
+                            liz.addStreamInfo( "video", stream )
                     full_liz.append((item['file'], liz, False))
                     
                     if date_type is not None:
