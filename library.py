@@ -44,6 +44,7 @@ class LibraryFunctions():
         self.LIMIT = int(__addon__.getSetting("limit"))
         self.RECENTITEMS_UNPLAYED = __addon__.getSetting("recentitems_unplayed")  == 'true'
         self.RANDOMITEMS_UNPLAYED = __addon__.getSetting("randomitems_unplayed")  == 'true'
+        self.INCLUDE_SPECIALS = __addon__.getSetting("include_specials")  == 'true'
         
     def _get_data(self, query_type, useCache):
         # Check if data is being refreshed elsewhere
@@ -86,19 +87,22 @@ class LibraryFunctions():
     # Common sort/filter arguments shared by multiple queries
     recent_sort = {"order": "descending", "method": "dateadded"}
     unplayed_filter = { "field": "playcount", "operator": "lessthan", "value":"1" }
+    specials_filter = { "field": "season", "operator": "greaterthan", "value":"0" }
     inprogress_filter = {"field":"inprogress", "operator":"true", "value":"" }
 
     # Construct a JSON query string from the arguments, execute it, return UTF8
-    def json_query(self, method, unplayed=False, properties=None, sort=False, 
+    def json_query(self, method, unplayed=False, include_specials=True, properties=None, sort=False,
                    query_filter=False, limit=False, params=False):
-        """method: Name of JSON method to call. unplayed: true if only unplayed results should be returnd.  properties: a list of property names to return, often one of the above lists of common properties.  sort: a sort order (e.g. the above recent_sort).  query_filter: a filter to apply to search results; see the unplayed/inprogress_filter examples above.  limit: if specified, a number of query results to return.  Otherwise self.LIMIT is used. args: An optional dictionary of arguments that will override those we automatically construct.  Many of these have default values of False, which will cause sensible defaults to be selected--if you want to override and omit the value entirely, pass in None instead of False"""
+        """method: Name of JSON method to call. unplayed: true if only unplayed results should be returnd. include_specials: true if the result should include specials  properties: a list of property names to return, often one of the above lists of common properties.  sort: a sort order (e.g. the above recent_sort).  query_filter: a filter to apply to search results; see the unplayed/inprogress_filter examples above.  limit: if specified, a number of query results to return.  Otherwise self.LIMIT is used. args: An optional dictionary of arguments that will override those we automatically construct.  Many of these have default values of False, which will cause sensible defaults to be selected--if you want to override and omit the value entirely, pass in None instead of False"""
         # Set defaults if not all arguments are passed in
         if sort is False:
             sort = { "method": "random" }
         if properties is None:
             properties = self.movie_properties
-        if unplayed and not query_filter:
+        if unplayed:
             query_filter = self.unplayed_filter if not query_filter else { "and":[self.unplayed_filter, query_filter] }
+        if not include_specials:
+            query_filter = self.specials_filter if not query_filter else { "and":[self.specials_filter, query_filter] }
 
         json_query = { "jsonrpc": "2.0", "id": 1, "method": method, "params": {} }
 
@@ -129,7 +133,7 @@ class LibraryFunctions():
     def _fetch_random_episodes(self, useCache = False, sort=False, prefix="randomepisodes"):
         unplayed_flag = self.RANDOMITEMS_UNPLAYED if prefix=="randomepisodes" else self.RECENTITEMS_UNPLAYED
         def query_randomepisodes():
-            return self.json_query("VideoLibrary.GetEpisodes", unplayed=unplayed_flag, properties=self.tvepisode_properties, sort=sort)
+            return self.json_query("VideoLibrary.GetEpisodes", unplayed=unplayed_flag, include_specials=self.INCLUDE_SPECIALS, properties=self.tvepisode_properties, sort=sort)
         return self._fetch_items(useCache, prefix, query_randomepisodes)
 
     def _fetch_random_songs(self, useCache = False, sort=False):
@@ -170,7 +174,7 @@ class LibraryFunctions():
                 for item in json_query['result']['tvshows']:
                     if xbmc.abortRequested:
                         break
-                    json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True, properties=self.tvepisode_properties, 
+                    json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True, include_specials=self.INCLUDE_SPECIALS, properties=self.tvepisode_properties,
                                                   sort={"method":"episode"}, limit=1, params={"tvshowid": item['tvshowid']})
                     self.WINDOW.setProperty("recommended-episodes-data-%d"%item['tvshowid'], json_query2)
             return json_query_string
@@ -187,7 +191,7 @@ class LibraryFunctions():
         def query_favourite():
             # Get all favourites and all unwatched shows, and store their intersection in fav_unwatched
             favs = json.loads(self.json_query("Favourites.GetFavourites", 
-                                              False, properties=[], sort=None, query_filter=None, limit=None))
+                                              unplayed=False, properties=[], sort=None, query_filter=None, limit=None))
             if favs['result']['favourites'] is None:
                 return None
             shows = json.loads(self.json_query("VideoLibrary.GetTVShows", unplayed=True, properties=self.tvshow_properties, limit=None))
@@ -200,7 +204,7 @@ class LibraryFunctions():
             rv = { u'jsonrpc': u'2.0', u'id': 1, u'result': { u'tvshows': [], u'limits': { u'start': 0, u'total': 0, u'end': 0 } } }
             # Find the oldest unwatched episode for each fav_unwatched, and add it to the rv; store data in a per-show property
             for fav in fav_unwatched:
-                show_info_string =  self.json_query("VideoLibrary.GetEpisodes", True, properties=self.tvepisode_properties, 
+                show_info_string =  self.json_query("VideoLibrary.GetEpisodes", unplayed=True, include_specials=self.INCLUDE_SPECIALS, properties=self.tvepisode_properties,
                                                     params={"tvshowid": fav['tvshowid']}, sort={"method": "episode"}, limit=1, 
                                                     query_filter=self.unplayed_filter)
                 show_info = json.loads(show_info_string)
