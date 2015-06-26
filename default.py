@@ -129,8 +129,10 @@ class Main:
                     watchedepisodes = 0
                     tvshows = []
                     tvshowscount = 0
-                    for item in json_response["result"]["files"]:
-                        if "type" in item:
+                    if "files" in json_response["result"]:
+                        for item in json_response["result"]["files"]:
+                            if "type" not in item:
+                                continue
                             if item["type"] == "episode":
                                 episodes += 1
                                 if item["playcount"] > 0:
