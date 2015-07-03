@@ -14,5 +14,11 @@
 		<disclaimer lang="en">This plugin is not a standalone plugin, your skin must support it.</disclaimer>
 		<platform>all</platform>
 		<language />
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
+		<forum>http://forum.kodi.tv/showthread.php?tid=210063</forum>
+		<website>https://github.com/BigNoid/service.library.data.provider</website>
+		<email>big.noid@kodi.tv</email>
+		<source>https://github.com/BigNoid/service.library.data.provider</source>
 	</extension>
 </addon>
