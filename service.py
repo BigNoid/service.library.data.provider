@@ -81,18 +81,21 @@ class Main:
         LIBRARY._fetch_random_episodes()
         LIBRARY._fetch_random_songs()
         LIBRARY._fetch_random_albums()
+        LIBRARY._fetch_random_musicvideos()
 
         
     def _fetch_recent( self ):
         LIBRARY._fetch_recent_movies()
         LIBRARY._fetch_recent_episodes()
         LIBRARY._fetch_recent_albums()
+        LIBRARY._fetch_recent_musicvideos()
             
     
     def _fetch_recommended( self ):
         LIBRARY._fetch_recommended_movies()
         LIBRARY._fetch_recommended_episodes()
         LIBRARY._fetch_recommended_albums()
+        LIBRARY._fetch_recommended_musicvideos()
 
     def _fetch_favourite( self ):
         LIBRARY._fetch_favourite_episodes()
@@ -129,6 +132,9 @@ class Main:
         elif type == 'music':
             LIBRARY._fetch_recommended_albums()
             LIBRARY._fetch_recent_albums()
+        elif type == 'musicvideo':
+            LIBRARY._fetch_recommended_musicvideos()
+            LIBRARY._fetch_recent_musicvideos()
     
 class Widgets_Monitor(xbmc.Monitor):
     def __init__(self, *args, **kwargs):
@@ -181,6 +187,8 @@ class Widgets_Player(xbmc.Player):
             self.action('episode')
         elif self.type == 'music':
             self.action('music')
+        elif self.type == 'musicvideo':
+            self.action('musicvideo')
         self.type = ""
     
 log('service version %s started' % __addonversion__)
