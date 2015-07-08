@@ -83,6 +83,7 @@ class LibraryFunctions():
     tvshow_properties = [ "title", "studio", "mpaa", "file", "art" ]
     music_properties = [ "title", "playcount", "genre", "artist", "album", "year", "file", "thumbnail", "fanart", "rating", "lastplayed" ]
     album_properties = [ "title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"]
+    musicvideo_properties = ["title", "artist", "playcount", "studio", "director", "year", "plot", "genre", "runtime", "art", "file", "streamdetails", "resume"]
     
     # Common sort/filter arguments shared by multiple queries
     recent_sort = {"order": "descending", "method": "dateadded"}
@@ -120,7 +121,7 @@ class LibraryFunctions():
 
         json_string = json.dumps(json_query)
         rv = xbmc.executeJSONRPC(json_string)
-        
+
         return unicode(rv, 'utf-8', errors='ignore')
 
     # These functions default to random items, but by sorting differently they'll also be used for recent items
@@ -145,6 +146,12 @@ class LibraryFunctions():
         def query_randomalbums():
             return self.json_query("AudioLibrary.GetAlbums", properties=self.album_properties, sort=sort)
         return self._fetch_items(useCache, prefix, query_randomalbums)
+
+    def _fetch_random_musicvideos(self, useCache = False, sort=False, prefix="randommusicvideos"):
+    	unplayed_flag = self.RANDOMITEMS_UNPLAYED if prefix=="randommusicvideos" else self.RECENTITEMS_UNPLAYED
+        def query_musicvideos():
+            return self.json_query("VideoLibrary.GetMusicVideos", properties=self.musicvideo_properties, sort=sort)
+        return self._fetch_items(useCache, prefix, query_musicvideos)
             
     # _fetch_recent_* is just the same as the random ones except for sorting
     def _fetch_recent_movies(self, useCache = False):
@@ -155,6 +162,9 @@ class LibraryFunctions():
 
     def _fetch_recent_albums(self, useCache = False):
         return self._fetch_random_albums(useCache, sort=self.recent_sort, prefix="recentalbums")
+
+    def _fetch_recent_musicvideos(self, useCache = False):
+        return self._fetch_random_musicvideos(useCache, sort=self.recent_sort, prefix="recentmusicvideos")
 
     # Recommended movies: movies that are in progress
     def _fetch_recommended_movies(self, useCache = False):
@@ -185,7 +195,12 @@ class LibraryFunctions():
         def query_recommended():
             return self.json_query("AudioLibrary.GetAlbums", properties=self.album_properties, sort={"order":"descending", "method":"playcount"})
         return self._fetch_items(useCache, "recommendedalbums", query_recommended)
-        
+ 
+    def _fetch_recommended_musicvideos(self, useCache = False):
+        def query_recommended_musicvideos():
+            return self.json_query("VideoLibrary.GetMusicVideos", properties=self.musicvideo_properties, query_filter=self.inprogress_filter)
+        return self._fetch_items(useCache, "recommendedmusicvideos", query_recommended_musicvideos)
+       
     # Favourite episodes are the oldest unwatched episodes from shows that are in your favourites list
     def _fetch_favourite_episodes(self, useCache = False):
         def query_favourite():
