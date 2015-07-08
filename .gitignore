@@ -1,1 +1,3 @@
 *.pyo
+*.sh
+*.sublime*
