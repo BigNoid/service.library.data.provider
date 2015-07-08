@@ -176,6 +176,8 @@ class Widgets_Player(xbmc.Player):
                 # Check for tv show title and season to make sure it's really an episode
                 if xbmc.getInfoLabel('VideoPlayer.Season') != "" and xbmc.getInfoLabel('VideoPlayer.TVShowTitle') != "":
                     self.type = "episode"
+            elif xbmc.getCondVisibility('VideoPlayer.Content(musicvideos)'):
+                self.type = "musicvideo"
 
     def onPlayBackEnded(self):
         self.onPlayBackStopped()
