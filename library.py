@@ -76,12 +76,97 @@ class LibraryFunctions():
         return rv
 
     # Common properties used by various types of queries
-    movie_properties = ["title", "originaltitle", "votes", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director", "writer", "cast", "dateadded"]
-    tvepisode_properties = ["title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "streamdetails", "firstaired", "runtime", "writer", "cast", "dateadded", "lastplayed"]
-    tvshow_properties = ["title", "studio", "mpaa", "file", "art"]
-    music_properties = ["title", "playcount", "genre", "artist", "album", "year", "file", "thumbnail", "fanart", "rating", "lastplayed"]
-    album_properties = ["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"]
-    musicvideo_properties = ["title", "artist", "playcount", "studio", "director", "year", "plot", "genre", "runtime", "art", "file", "streamdetails", "resume"]
+    movie_properties = [
+                            "title",
+                            "originaltitle",
+                            "votes",
+                            "playcount",
+                            "year",
+                            "genre",
+                            "studio",
+                            "country",
+                            "tagline",
+                            "plot",
+                            "runtime",
+                            "file",
+                            "plotoutline",
+                            "lastplayed",
+                            "trailer",
+                            "rating",
+                            "resume",
+                            "art",
+                            "streamdetails",
+                            "mpaa",
+                            "director",
+                            "writer",
+                            "cast",
+                            "dateadded"]
+    tvepisode_properties = [
+                            "title",
+                            "playcount",
+                            "season",
+                            "episode",
+                            "showtitle",
+                            "plot",
+                            "file",
+                            "rating",
+                            "resume",
+                            "tvshowid",
+                            "art",
+                            "streamdetails",
+                            "firstaired",
+                            "runtime",
+                            "writer",
+                            "cast",
+                            "dateadded",
+                            "lastplayed"]
+    tvshow_properties = [
+                            "title",
+                            "studio",
+                            "mpaa",
+                            "file",
+                            "art"]
+    music_properties = [
+                            "title",
+                            "playcount",
+                            "genre",
+                            "artist",
+                            "album",
+                            "year",
+                            "file",
+                            "thumbnail",
+                            "fanart",
+                            "rating",
+                            "lastplayed"]
+    album_properties = [
+                            "title",
+                            "description",
+                            "albumlabel",
+                            "theme",
+                            "mood",
+                            "style",
+                            "type",
+                            "artist",
+                            "genre",
+                            "year",
+                            "thumbnail",
+                            "fanart",
+                            "rating",
+                            "playcount"]
+    musicvideo_properties = [
+                            "title",
+                            "artist",
+                            "playcount",
+                            "studio",
+                            "director",
+                            "year",
+                            "plot",
+                            "genre",
+                            "runtime",
+                            "art",
+                            "file",
+                            "streamdetails",
+                            "resume"]
 
     # Common sort/filter arguments shared by multiple queries
     recent_sort = {"order": "descending", "method": "dateadded"}
@@ -92,7 +177,6 @@ class LibraryFunctions():
     # Construct a JSON query string from the arguments, execute it, return UTF8
     def json_query(self, method, unplayed=False, include_specials=True, properties=None, sort=False,
                    query_filter=False, limit=False, params=False):
-        """method: Name of JSON method to call. unplayed: true if only unplayed results should be returnd. include_specials: true if the result should include specials  properties: a list of property names to return, often one of the above lists of common properties.  sort: a sort order (e.g. the above recent_sort).  query_filter: a filter to apply to search results; see the unplayed/inprogress_filter examples above.  limit: if specified, a number of query results to return.  Otherwise self.LIMIT is used. args: An optional dictionary of arguments that will override those we automatically construct.  Many of these have default values of False, which will cause sensible defaults to be selected--if you want to override and omit the value entirely, pass in None instead of False"""
         # Set defaults if not all arguments are passed in
         if sort is False:
             sort = {"method": "random"}

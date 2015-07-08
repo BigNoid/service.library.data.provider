@@ -180,7 +180,21 @@ class Main:
         if not self.TYPE:
             # Show a root menu
             full_liz = list()
-            items = [[32004, "randommovies"], [32005, "recentmovies"], [32006, "recommendedmovies"], [32007, "randomepisodes"], [32008, "recentepisodes"], [32010, "recommendedepisodes"], [32020, "favouriteepisodes"], [32019, "recentvideos"], [32016, "randomalbums"], [32017, "recentalbums"], [32018, "recommendedalbums"], [32015, "randomsongs"], [32022, "randommusicvideos"], [32023, "recentmusicvideos"], [32024, "recommendedmusicvideos"]]
+            items = [[32004, "randommovies"],
+                     [32005, "recentmovies"],
+                     [32006, "recommendedmovies"],
+                     [32007, "randomepisodes"],
+                     [32008, "recentepisodes"],
+                     [32010, "recommendedepisodes"],
+                     [32020, "favouriteepisodes"],
+                     [32019, "recentvideos"],
+                     [32016, "randomalbums"],
+                     [32017, "recentalbums"],
+                     [32018, "recommendedalbums"],
+                     [32015, "randomsongs"],
+                     [32022, "randommusicvideos"],
+                     [32023, "recentmusicvideos"],
+                     [32024, "recommendedmusicvideos"]]
             for item in items:
                 liz = xbmcgui.ListItem(ADDON_LANGUAGE(item[0]))
                 liz.setIconImage("DefaultFolder.png")
