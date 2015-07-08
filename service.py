@@ -181,14 +181,9 @@ class Widgets_Player(xbmc.Player):
         self.onPlayBackStopped()
 
     def onPlayBackStopped(self):
-        if self.type == 'movie':
-            self.action('movie')
-        elif self.type == 'episode':
-            self.action('episode')
-        elif self.type == 'music':
-            self.action('music')
-        elif self.type == 'musicvideo':
-            self.action('musicvideo')
+        # type is set in onPlayBackStarted
+        if self.type:
+            self.action(self.type)
         self.type = ""
     
 log('service version %s started' % __addonversion__)
