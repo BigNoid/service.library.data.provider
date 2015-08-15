@@ -100,7 +100,8 @@ class LibraryFunctions():
                             "director",
                             "writer",
                             "cast",
-                            "dateadded"]
+                            "dateadded",
+                            "imdbnumber"]
     tvepisode_properties = [
                             "title",
                             "playcount",

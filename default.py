@@ -196,8 +196,7 @@ class Main:
                      [32023, "recentmusicvideos"],
                      [32024, "recommendedmusicvideos"]]
             for item in items:
-                liz = xbmcgui.ListItem(ADDON_LANGUAGE(item[0]))
-                liz.setIconImage("DefaultFolder.png")
+                liz = xbmcgui.ListItem(ADDON_LANGUAGE(item[0]), iconImage='DefaultFolder.png')
                 full_liz.append(("plugin://service.library.data.provider?type=" + item[1], liz, True))
             xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
         xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
@@ -264,6 +263,7 @@ class Main:
                     liz.setThumbnailImage(item['art'].get('poster', ''))
                     liz.setIconImage('DefaultVideoCover.png')
                     liz.setProperty("dbid", str(item['movieid']))
+                    liz.setProperty("imdbnumber", str(item['imdbnumber']))
                     liz.setProperty("fanart_image", item['art'].get('fanart', ''))
                     hasVideo = False
                     for key, value in item['streamdetails'].iteritems():
