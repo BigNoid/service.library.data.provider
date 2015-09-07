@@ -313,6 +313,10 @@ class Main:
                                 season = "%.2d" % float(item2['season'])
                                 episodeno = "s%se%s" % (season, episode)
                                 break
+                        else:
+                            # if there are no episodes to grab, don't bother adding them.
+                            # if they get added they will show up as the show before and just duplicate it
+                            continue
                         watched = False
                         if item2['playcount'] >= 1:
                             watched = True
