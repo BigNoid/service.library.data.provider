@@ -374,8 +374,6 @@ class Main:
                             count += 1
                             if count == self.LIMIT:
                                 break
-                        else:
-                            count -= 1
                     if count == self.LIMIT:
                         break
             del json_query
