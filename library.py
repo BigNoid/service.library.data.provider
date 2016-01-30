@@ -298,12 +298,6 @@ class LibraryFunctions():
                                    sort={"order": "descending", "method": "playcount"})
         return self._fetch_items(useCache, "recommendedalbums", query_recommended)
 
-    def _fetch_recommended_musicvideos(self, useCache=False):
-        def query_recommended_musicvideos():
-            return self.json_query("VideoLibrary.GetMusicVideos", properties=self.musicvideo_properties,
-                                   query_filter=self.inprogress_filter)
-        return self._fetch_items(useCache, "recommendedmusicvideos", query_recommended_musicvideos)
-
     # Favourite episodes are the oldest unwatched episodes
     # from shows that are in your favourites list
     def _fetch_favourite_episodes(self, useCache=False):

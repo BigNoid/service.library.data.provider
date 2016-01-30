@@ -86,7 +86,6 @@ class Main:
         LIBRARY._fetch_recommended_movies()
         LIBRARY._fetch_recommended_episodes()
         LIBRARY._fetch_recommended_albums()
-        LIBRARY._fetch_recommended_musicvideos()
 
     def _fetch_favourite(self):
         LIBRARY._fetch_favourite_episodes()
@@ -124,7 +123,6 @@ class Main:
             LIBRARY._fetch_recommended_albums()
             LIBRARY._fetch_recent_albums()
         elif type == 'musicvideo':
-            LIBRARY._fetch_recommended_musicvideos()
             LIBRARY._fetch_recent_musicvideos()
 
 

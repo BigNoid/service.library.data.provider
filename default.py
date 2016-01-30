@@ -116,8 +116,6 @@ class Main:
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == "recommendedmusicvideos":
                 xbmcplugin.setContent(int(sys.argv[1]), 'musicvideos')
-                self.parse_musicvideos('recommendedmusicvideos', 32024, full_liz)
-                xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == 'playliststats':
                 lo = self.id.lower()
                 if ("activatewindow" in lo) and ("://" in lo) and ("," in lo):
@@ -199,8 +197,7 @@ class Main:
                      [32018, "recommendedalbums"],
                      [32015, "randomsongs"],
                      [32022, "randommusicvideos"],
-                     [32023, "recentmusicvideos"],
-                     [32024, "recommendedmusicvideos"]]
+                     [32023, "recentmusicvideos"]]
             for item in items:
                 liz = xbmcgui.ListItem(ADDON_LANGUAGE(item[0]), iconImage='DefaultFolder.png')
                 full_liz.append(("plugin://service.library.data.provider?type=" + item[1], liz, True))
@@ -676,8 +673,6 @@ class Main:
             return LIBRARY._fetch_random_musicvideos(self.USECACHE)
         elif request == "recentmusicvideos":
             return LIBRARY._fetch_recent_musicvideos(self.USECACHE)
-        elif request == "recommendedmusicvideos":
-            return LIBRARY._fetch_recommended_musicvideos(self.USECACHE)
 
     def _parse_argv(self):
         try:
