@@ -1,3 +1,6 @@
+[B]0.1.5[/B]
+ - Fix circular reference warnings on shutdown. 
+ 
 [B]0.1.4[/B]
 - Added missing 'director" property for recommended episodes.
 
