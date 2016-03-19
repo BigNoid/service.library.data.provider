@@ -251,6 +251,7 @@ class Main:
                     liz.setInfo(type="Video", infoLabels={"Votes": item['votes']})
                     liz.setInfo(type="Video", infoLabels={"MPAA": item['mpaa']})
                     liz.setInfo(type="Video", infoLabels={"Director": " / ".join(item['director'])})
+                    liz.setInfo(type="Video", infoLabels={"mediatype": "movie"})
                     if "writer" in item:
                         liz.setInfo(type="Video", infoLabels={"Writer": " / ".join(item['writer'])})
                     if "cast" in item:
@@ -350,6 +351,7 @@ class Main:
                             liz.setInfo(type="Video", infoLabels={"Writer": writer})
                             liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
                             liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
+                            liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
                             liz.setProperty("episodeno", episodeno)
                             liz.setProperty("resumetime", str(item2['resume']['position']))
                             liz.setProperty("totaltime", str(item2['resume']['total']))
@@ -424,6 +426,7 @@ class Main:
                     liz.setInfo(type="Video", infoLabels={"Writer": writer})
                     liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
                     liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
+                    liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
                     liz.setProperty("episodeno", episodeno)
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
@@ -474,6 +477,7 @@ class Main:
                     liz.setInfo(type="Music", infoLabels={"Year": item['year']})
                     liz.setInfo(type="Music", infoLabels={"Rating": str(float(item['rating']))})
                     liz.setInfo(type="Music", infoLabels={"Album": item['album']})
+                    liz.setInfo(type="Music", infoLabels={"mediatype": "song"})
                     liz.setProperty("type", ADDON_LANGUAGE(list_type))
 
                     liz.setThumbnailImage(item['thumbnail'])
@@ -511,6 +515,7 @@ class Main:
                     liz.setInfo(type="Music", infoLabels={"Genre": " / ".join(item['genre'])})
                     liz.setInfo(type="Music", infoLabels={"Year": item['year']})
                     liz.setInfo(type="Music", infoLabels={"Rating": rating})
+                    liz.setInfo(type="Music", infoLabels={"mediatype": "album"})
                     liz.setProperty("Album_Mood", " / ".join(item['mood']))
                     liz.setProperty("Album_Style", " / ".join(item['style']))
                     liz.setProperty("Album_Theme", " / ".join(item['theme']))
@@ -571,6 +576,7 @@ class Main:
                     liz.setInfo(type="Video", infoLabels={"Artist": item['artist']})
                     liz.setInfo(type="Video", infoLabels={"Director": director})
                     liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
+                    liz.setInfo(type="Video", infoLabels={"mediatype": "musicvideo"})
                     liz.setProperty("resumetime", str(item['resume']['position']))
                     liz.setProperty("totaltime", str(item['resume']['total']))
                     liz.setProperty("type", ADDON_LANGUAGE(list_type))
