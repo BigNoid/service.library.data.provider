@@ -114,8 +114,6 @@ class Main:
                 xbmcplugin.setContent(int(sys.argv[1]), 'musicvideos')
                 self.parse_musicvideos('recentmusicvideos', 32023, full_liz)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
-            elif content_type == "recommendedmusicvideos":
-                xbmcplugin.setContent(int(sys.argv[1]), 'musicvideos')
             elif content_type == 'playliststats':
                 lo = self.id.lower()
                 if ("activatewindow" in lo) and ("://" in lo) and ("," in lo):
@@ -311,7 +309,7 @@ class Main:
                     json_query2 = self.WINDOW.getProperty(prefix + "-data-" + str(item['tvshowid']))
                     if json_query2:
                         json_query2 = simplejson.loads(json_query2)
-                        if "result" in json_query2 and json_query2['result'] != None and 'episodes' in json_query2['result']:
+                        if "result" in json_query2 and json_query2['result'] is not None and 'episodes' in json_query2['result']:
                             for item2 in json_query2['result']['episodes']:
                                 episode = "%.2d" % float(item2['episode'])
                                 season = "%.2d" % float(item2['season'])
