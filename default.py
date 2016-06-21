@@ -25,6 +25,7 @@ import xbmcgui
 import xbmcplugin
 import xbmcaddon
 import library
+from resources.lib import data
 
 if sys.version_info < (2, 7):
     import simplejson
@@ -48,9 +49,8 @@ def log(txt):
 class Main:
 
     def __init__(self):
+        self._init_vars()
         self._parse_argv()
-        self.WINDOW = xbmcgui.Window(10000)
-        self.SETTINGSLIMIT = int(ADDON.getSetting("limit"))
         for content_type in self.TYPE.split("+"):
             full_liz = list()
             if content_type == "randommovies":
@@ -115,63 +115,7 @@ class Main:
                 self.parse_musicvideos('recentmusicvideos', 32023, full_liz)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == 'playliststats':
-                lo = self.id.lower()
-                if ("activatewindow" in lo) and ("://" in lo) and ("," in lo):
-                    if ("\"" in lo):
-                        # remove &quot; from path (gets added by favorites)
-                        path = self.id.translate(None, '\"')
-                    else:
-                        path = self.id
-                    playlistpath = path.split(",")[1]
-                    json_query = xbmc.executeJSONRPC('''{"jsonrpc": "2.0", "method": "Files.GetDirectory",
-                                                         "params": {"directory": "%s", "media": "video",
-                                                         "properties": ["playcount",
-                                                                        "resume",
-                                                                        "episode",
-                                                                        "watchedepisodes",
-                                                                        "tvshowid"]},
-                                                         "id": 1}''' % (playlistpath))
-                    json_response = simplejson.loads(json_query)
-                    if "result" not in json_response:
-                        return None
-                    if "files" not in json_response["result"]:
-                        return None
-                    played = 0
-                    numitems = 0
-                    inprogress = 0
-                    episodes = 0
-                    watchedepisodes = 0
-                    tvshows = []
-                    tvshowscount = 0
-                    if "files" in json_response["result"]:
-                        for item in json_response["result"]["files"]:
-                            if "type" not in item:
-                                continue
-                            if item["type"] == "episode":
-                                episodes += 1
-                                if item["playcount"] > 0:
-                                    watchedepisodes += 1
-                                if item["tvshowid"] not in tvshows:
-                                    tvshows.append(item["tvshowid"])
-                                    tvshowscount += 1
-                            elif item["type"] == "tvshow":
-                                episodes += item["episode"]
-                                watchedepisodes += item["watchedepisodes"]
-                                tvshowscount += 1
-                            else:
-                                numitems += 1
-                                if "playcount" in item.keys():
-                                    if item["playcount"] > 0:
-                                        played += 1
-                                    if item["resume"]["position"] > 0:
-                                        inprogress += 1
-                    self.WINDOW.setProperty('PlaylistWatched', str(played))
-                    self.WINDOW.setProperty('PlaylistCount', str(numitems))
-                    self.WINDOW.setProperty('PlaylistTVShowCount', str(tvshowscount))
-                    self.WINDOW.setProperty('PlaylistInProgress', str(inprogress))
-                    self.WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
-                    self.WINDOW.setProperty('PlaylistEpisodes', str(episodes))
-                    self.WINDOW.setProperty('PlaylistEpisodesUnWatched', str(episodes - watchedepisodes))
+                data.get_playlist_stats(self.path)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
 
             # Play an albums
@@ -204,6 +148,10 @@ class Main:
 
     def _init_vars(self):
         self.WINDOW = xbmcgui.Window(10000)
+        self.SETTINGSLIMIT = int(ADDON.getSetting("limit"))
+        global PLOT_ENABLE
+        PLOT_ENABLE = ADDON.getSetting("plot_enable") == 'true'
+        self.RANDOMITEMS_UNPLAYED = ADDON.getSetting("randomitems_unplayed") == 'true'
 
     def parse_movies(self, request, list_type, full_liz, date_liz=None, date_type=None):
         json_query = self._get_data(request)
@@ -288,9 +236,6 @@ class Main:
                         break
 
             del json_query
-
-    def parse_tvshows_favourite(self, request, list_type, full_liz, date_liz=None, date_type=None):
-        return self.parse_tvshows_recommended(request, list_type, full_liz, date_liz, date_type, favourites=True)
 
     def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz=None, date_type=None, favourites=False):
         prefix = "recommended-episodes" if not favourites else "favouriteepisodes"
@@ -382,6 +327,9 @@ class Main:
                     if count == self.LIMIT:
                         break
             del json_query
+
+    def parse_tvshows_favourite(self, request, list_type, full_liz, date_liz=None, date_type=None):
+        return self.parse_tvshows_recommended(request, list_type, full_liz, date_liz, date_type, favourites=True)
 
     def parse_tvshows(self, request, list_type, full_liz, date_liz=None, date_type=None):
         json_query = self._get_data(request)
@@ -686,13 +634,10 @@ class Main:
         self.TYPE = params.get("?type", "")
         self.ALBUM = params.get("album", "")
         self.USECACHE = params.get("reload", False)
-        self.id = params.get("id", "")
+        self.path = params.get("id", "").lower()
         if self.USECACHE is not False:
             self.USECACHE = True
         self.LIMIT = int(params.get("limit", "-1"))
-        global PLOT_ENABLE
-        PLOT_ENABLE = ADDON.getSetting("plot_enable") == 'true'
-        self.RANDOMITEMS_UNPLAYED = ADDON.getSetting("randomitems_unplayed") == 'true'
 
 log('script version %s started' % ADDON_VERSION)
 Main()
