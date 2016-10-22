@@ -69,6 +69,10 @@ class Main:
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
                 self.parse_tvshows_recommended('recommendedepisodes', 32010, full_liz)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
+            elif content_type == "allrecommendedepisodes":
+                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+                self.parse_tvshows_recommended_all('allrecommendedepisodes', 32025, full_liz)
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == "favouriteepisodes":
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
                 self.parse_tvshows_favourite('favouriteepisodes', 32020, full_liz)
@@ -131,6 +135,7 @@ class Main:
                      [32006, "recommendedmovies"],
                      [32007, "randomepisodes"],
                      [32008, "recentepisodes"],
+                     [32025, "allrecommendedepisodes"],
                      [32010, "recommendedepisodes"],
                      [32020, "favouriteepisodes"],
                      [32019, "recentvideos"],
@@ -237,8 +242,10 @@ class Main:
 
             del json_query
 
-    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz=None, date_type=None, favourites=False):
+    def parse_tvshows_recommended(self, request, list_type, full_liz, date_liz=None, date_type=None, favourites=False,
+                                  all_shows=None):
         prefix = "recommended-episodes" if not favourites else "favouriteepisodes"
+        prefix = prefix if not all_shows else "all-recommended-episodes"
         json_query = self._get_data(request)
         while json_query == "LOADING":
             xbmc.sleep(100)
@@ -330,6 +337,9 @@ class Main:
 
     def parse_tvshows_favourite(self, request, list_type, full_liz, date_liz=None, date_type=None):
         return self.parse_tvshows_recommended(request, list_type, full_liz, date_liz, date_type, favourites=True)
+
+    def parse_tvshows_recommended_all(self, request, list_type, full_liz, date_liz=None, date_type=None):
+        return self.parse_tvshows_recommended(request, list_type, full_liz, date_liz, date_type, all_shows=True)
 
     def parse_tvshows(self, request, list_type, full_liz, date_liz=None, date_type=None):
         json_query = self._get_data(request)
@@ -608,6 +618,8 @@ class Main:
             return LIBRARY._fetch_recent_episodes(self.USECACHE)
         elif request == "recommendedepisodes":
             return LIBRARY._fetch_recommended_episodes(self.USECACHE)
+        elif request == "allrecommendedepisodes":
+            return LIBRARY._fetch_all_recommended_episodes(self.USECACHE)
         elif request == "favouriteepisodes":
             return LIBRARY._fetch_favourite_episodes(self.USECACHE)
 
