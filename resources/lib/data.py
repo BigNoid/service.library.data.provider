@@ -170,37 +170,34 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
 
                 # create a list item
                 liz = xbmcgui.ListItem(item['title'])
-                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
-                liz.setInfo(type="Video", infoLabels={"OriginalTitle": item['originaltitle']})
-                liz.setInfo(type="Video", infoLabels={"Year": item['year']})
-                liz.setInfo(type="Video", infoLabels={"Genre": " / ".join(item['genre'])})
-                liz.setInfo(type="Video", infoLabels={"Studio": studio})
-                liz.setInfo(type="Video", infoLabels={"Country": country})
-                liz.setInfo(type="Video", infoLabels={"Plot": plot})
-                liz.setInfo(type="Video", infoLabels={"PlotOutline": item['plotoutline']})
-                liz.setInfo(type="Video", infoLabels={"Tagline": item['tagline']})
-                liz.setInfo(type="Video", infoLabels={"Rating": str(float(item['rating']))})
-                liz.setInfo(type="Video", infoLabels={"Votes": item['votes']})
-                liz.setInfo(type="Video", infoLabels={"MPAA": item['mpaa']})
-                liz.setInfo(type="Video", infoLabels={"Director": " / ".join(item['director'])})
-                liz.setInfo(type="Video", infoLabels={"mediatype": "movie"})
-                if "writer" in item:
-                    liz.setInfo(type="Video", infoLabels={"Writer": " / ".join(item['writer'])})
-                if "cast" in item:
-                    liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
-                    liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
-                liz.setInfo(type="Video", infoLabels={"Trailer": item['trailer']})
-                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
+                liz.setInfo(type="Video", infoLabels={"Title": item['title'],
+                                                      "OriginalTitle": item['originaltitle'],
+                                                      "Year": item['year'],
+                                                      "Genre": " / ".join(item['genre']),
+                                                      "Studio": studio,
+                                                      "Country": country,
+                                                      "Plot": plot,
+                                                      "PlotOutline": item['plotoutline'],
+                                                      "Tagline": item['tagline'],
+                                                      "Rating": str(float(item['rating'])),
+                                                      "Votes": item['votes'],
+                                                      "MPAA": item['mpaa'],
+                                                      "Director": " / ".join(item['director']),
+                                                      "mediatype": "movie",
+                                                      "Trailer": item['trailer'],
+                                                      "Playcount": item['playcount'],
+                                                      "Writer": " / ".join(item['writer']),
+                                                      "Cast": cast[0],
+                                                      "CastAndRole": cast[1]})
                 liz.setProperty("resumetime", str(item['resume']['position']))
                 liz.setProperty("totaltime", str(item['resume']['total']))
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
-
-                liz.setArt(item['art'])
-                liz.setThumbnailImage(item['art'].get('poster', ''))
-                liz.setIconImage('DefaultVideoCover.png')
                 liz.setProperty("dbid", str(item['movieid']))
                 liz.setProperty("imdbnumber", str(item['imdbnumber']))
                 liz.setProperty("fanart_image", item['art'].get('fanart', ''))
+                liz.setArt(item['art'])
+                liz.setThumbnailImage(item['art'].get('poster', ''))
+                liz.setIconImage('DefaultVideoCover.png')
                 hasVideo = False
                 for key, value in item['streamdetails'].iteritems():
                     for stream in value:
@@ -208,7 +205,7 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                             hasVideo = True
                         liz.addStreamInfo(key, stream)
 
-                    # if duration wasnt in the streaminfo try adding the scraped one
+                # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
                     stream = {'duration': item['runtime']}
                     liz.addStreamInfo("video", stream)
@@ -267,30 +264,30 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                             writer = " / ".join(item2['writer'])
 
                         liz = xbmcgui.ListItem(item2['title'])
-                        liz.setInfo(type="Video", infoLabels={"Title": item2['title']})
-                        liz.setInfo(type="Video", infoLabels={"Episode": item2['episode']})
-                        liz.setInfo(type="Video", infoLabels={"Season": item2['season']})
-                        liz.setInfo(type="Video", infoLabels={"Studio": studio})
-                        liz.setInfo(type="Video", infoLabels={"Premiered": item2['firstaired']})
-                        liz.setInfo(type="Video", infoLabels={"Plot": plot})
-                        liz.setInfo(type="Video", infoLabels={"TVshowTitle": item2['showtitle']})
-                        liz.setInfo(type="Video", infoLabels={"Rating": rating})
-                        liz.setInfo(type="Video", infoLabels={"MPAA": item['mpaa']})
-                        liz.setInfo(type="Video", infoLabels={"Playcount": item2['playcount']})
-                        liz.setInfo(type="Video", infoLabels={"Director": director})
-                        liz.setInfo(type="Video", infoLabels={"Writer": writer})
-                        liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
-                        liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
-                        liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+                        liz.setInfo(type="Video", infoLabels={"Title": item2['title'],
+                                                              "Episode": item2['episode'],
+                                                              "Season": item2['season'],
+                                                              "Studio": studio,
+                                                              "Premiered": item2['firstaired'],
+                                                              "Plot": plot,
+                                                              "TVshowTitle": item2['showtitle'],
+                                                              "Rating": rating,
+                                                              "MPAA": item['mpaa'],
+                                                              "Playcount": item2['playcount'],
+                                                              "Director": director,
+                                                              "Writer": writer,
+                                                              "Cast": cast[0],
+                                                              "CastAndRole": cast[1],
+                                                              "mediatype": "episode"})
                         liz.setProperty("episodeno", episodeno)
                         liz.setProperty("resumetime", str(item2['resume']['position']))
                         liz.setProperty("totaltime", str(item2['resume']['total']))
                         liz.setProperty("type", ADDON_LANGUAGE(list_type))
+                        liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart', ''))
+                        liz.setProperty("dbid", str(item2['episodeid']))
                         liz.setArt(item2['art'])
                         liz.setThumbnailImage(item2['art'].get('thumb', ''))
                         liz.setIconImage('DefaultTVShows.png')
-                        liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart', ''))
-                        liz.setProperty("dbid", str(item2['episodeid']))
                         hasVideo = False
                         for key, value in item2['streamdetails'].iteritems():
                             for stream in value:
@@ -349,28 +346,28 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                     writer = " / ".join(item['writer'])
 
                 liz = xbmcgui.ListItem(item['title'])
-                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
-                liz.setInfo(type="Video", infoLabels={"Episode": item['episode']})
-                liz.setInfo(type="Video", infoLabels={"Season": item['season']})
-                liz.setInfo(type="Video", infoLabels={"Premiered": item['firstaired']})
-                liz.setInfo(type="Video", infoLabels={"Plot": plot})
-                liz.setInfo(type="Video", infoLabels={"TVshowTitle": item['showtitle']})
-                liz.setInfo(type="Video", infoLabels={"Rating": rating})
-                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
-                liz.setInfo(type="Video", infoLabels={"Director": director})
-                liz.setInfo(type="Video", infoLabels={"Writer": writer})
-                liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
-                liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
-                liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+                liz.setInfo(type="Video", infoLabels={"Title": item['title'],
+                                                      "Episode": item['episode'],
+                                                      "Season": item['season'],
+                                                      "Premiered": item['firstaired'],
+                                                      "Plot": plot,
+                                                      "TVshowTitle": item['showtitle'],
+                                                      "Rating": rating,
+                                                      "Playcount": item['playcount'],
+                                                      "Director": director,
+                                                      "Writer": writer,
+                                                      "Cast": cast[0],
+                                                      "CastAndRole": cast[1],
+                                                      "mediatype": "episode"})
                 liz.setProperty("episodeno", episodeno)
                 liz.setProperty("resumetime", str(item['resume']['position']))
                 liz.setProperty("totaltime", str(item['resume']['total']))
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
+                liz.setProperty("dbid", str(item['episodeid']))
+                liz.setProperty("fanart_image", item['art'].get('tvshow.fanart', ''))
                 liz.setArt(item['art'])
                 liz.setThumbnailImage(item['art'].get('thumb', ''))
                 liz.setIconImage('DefaultTVShows.png')
-                liz.setProperty("dbid", str(item['episodeid']))
-                liz.setProperty("fanart_image", item['art'].get('tvshow.fanart', ''))
 
                 hasVideo = False
                 for key, value in item['streamdetails'].iteritems():
@@ -408,18 +405,17 @@ def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_
                 liz = xbmcgui.ListItem(item['title'])
                 liz.setInfo(type="Music", infoLabels={"Title": item['title']})
                 if item['artist']:
-                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0]})
-                liz.setInfo(type="Music", infoLabels={"Genre": " / ".join(item['genre'])})
-                liz.setInfo(type="Music", infoLabels={"Year": item['year']})
-                liz.setInfo(type="Music", infoLabels={"Rating": str(float(item['rating']))})
-                liz.setInfo(type="Music", infoLabels={"Album": item['album']})
-                liz.setInfo(type="Music", infoLabels={"mediatype": "song"})
+                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0],
+                                                          "Genre": " / ".join(item['genre']),
+                                                          "Year": item['year'],
+                                                          "Rating": str(float(item['rating'])),
+                                                          "Album": item['album'],
+                                                          "mediatype": "song"})
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
-
-                liz.setThumbnailImage(item['thumbnail'])
-                liz.setIconImage('DefaultMusicSongs.png')
                 liz.setProperty("fanart_image", item['fanart'])
                 liz.setProperty("dbid", str(item['songid']))
+                liz.setThumbnailImage(item['thumbnail'])
+                liz.setIconImage('DefaultMusicSongs.png')
                 full_liz.append((item['file'], liz, False))
 
                 if date_type is not None:
@@ -448,11 +444,11 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz = xbmcgui.ListItem(item['title'])
                 liz.setInfo(type="Music", infoLabels={"Title": item['title']})
                 if item['artist']:
-                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0]})
-                liz.setInfo(type="Music", infoLabels={"Genre": " / ".join(item['genre'])})
-                liz.setInfo(type="Music", infoLabels={"Year": item['year']})
-                liz.setInfo(type="Music", infoLabels={"Rating": rating})
-                liz.setInfo(type="Music", infoLabels={"mediatype": "album"})
+                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0],
+                                                          "Genre": " / ".join(item['genre']),
+                                                          "Year": item['year'],
+                                                          "Rating": rating,
+                                                          "mediatype": "album"})
                 liz.setProperty("Album_Mood", " / ".join(item['mood']))
                 liz.setProperty("Album_Style", " / ".join(item['style']))
                 liz.setProperty("Album_Theme", " / ".join(item['theme']))
@@ -460,11 +456,10 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("Album_Label", item['albumlabel'])
                 liz.setProperty("Album_Description", item['description'])
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
-
-                liz.setThumbnailImage(item['thumbnail'])
-                liz.setIconImage('DefaultAlbumCover.png')
                 liz.setProperty("fanart_image", item['fanart'])
                 liz.setProperty("dbid", str(item['albumid']))
+                liz.setThumbnailImage(item['thumbnail'])
+                liz.setIconImage('DefaultAlbumCover.png')
 
                 # Path will call plugin again, with the album id
                 path = sys.argv[0] + "?type=play_album&album=" + str(item['albumid'])
@@ -506,24 +501,23 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
 
                 # create a list item
                 liz = xbmcgui.ListItem(item['title'])
-                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
-                liz.setInfo(type="Video", infoLabels={"Year": item['year']})
-                liz.setInfo(type="Video", infoLabels={"Genre": " / ".join(item['genre'])})
-                liz.setInfo(type="Video", infoLabels={"Studio": studio})
-                liz.setInfo(type="Video", infoLabels={"Plot": plot})
-                liz.setInfo(type="Video", infoLabels={"Artist": item['artist']})
-                liz.setInfo(type="Video", infoLabels={"Director": director})
-                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
-                liz.setInfo(type="Video", infoLabels={"mediatype": "musicvideo"})
+                liz.setInfo(type="Video", infoLabels={"Title": item['title'],
+                                                      "Year": item['year'],
+                                                      "Genre": " / ".join(item['genre']),
+                                                      "Studio": studio,
+                                                      "Plot": plot,
+                                                      "Artist": item['artist'],
+                                                      "Director": director,
+                                                      "Playcount": item['playcount'],
+                                                      "mediatype": "musicvideo"})
                 liz.setProperty("resumetime", str(item['resume']['position']))
                 liz.setProperty("totaltime", str(item['resume']['total']))
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
-
+                liz.setProperty("dbid", str(item['musicvideoid']))
+                liz.setProperty("fanart_image", item['art'].get('fanart', ''))
                 liz.setArt(item['art'])
                 liz.setThumbnailImage(item['art'].get('poster', ''))
                 liz.setIconImage('DefaultVideoCover.png')
-                liz.setProperty("dbid", str(item['musicvideoid']))
-                liz.setProperty("fanart_image", item['art'].get('fanart', ''))
                 hasVideo = False
                 for key, value in item['streamdetails'].iteritems():
                     for stream in value:
