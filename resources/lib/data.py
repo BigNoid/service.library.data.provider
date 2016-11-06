@@ -165,6 +165,10 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                     country = item['country'][0]
                 else:
                     country = ""
+                if "director" in item:
+                    director = " / ".join(item['director'])
+                if "writer" in item:
+                    writer = " / ".join(item['writer'])
                 if "cast" in item:
                     cast = _get_cast(item['cast'])
 
@@ -182,13 +186,13 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                                                       "Rating": str(float(item['rating'])),
                                                       "Votes": item['votes'],
                                                       "MPAA": item['mpaa'],
-                                                      "Director": " / ".join(item['director']),
+                                                      "Director": director,
+                                                      "Writer": writer,
+                                                      "Cast": cast[0],
+                                                      "CastAndRole": cast[1],
                                                       "mediatype": "movie",
                                                       "Trailer": item['trailer'],
-                                                      "Playcount": item['playcount'],
-                                                      "Writer": " / ".join(item['writer']),
-                                                      "Cast": cast[0],
-                                                      "CastAndRole": cast[1]})
+                                                      "Playcount": item['playcount']})
                 liz.setProperty("resumetime", str(item['resume']['position']))
                 liz.setProperty("totaltime", str(item['resume']['total']))
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
@@ -257,7 +261,6 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                             studio = ""
                         if "cast" in item2:
                             cast = _get_cast(item2['cast'])
-                        rating = str(round(float(item2['rating']), 1))
                         if "director" in item2:
                             director = " / ".join(item2['director'])
                         if "writer" in item2:
@@ -271,7 +274,7 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                                                               "Premiered": item2['firstaired'],
                                                               "Plot": plot,
                                                               "TVshowTitle": item2['showtitle'],
-                                                              "Rating": rating,
+                                                              "Rating": str(float(item2['rating'])),
                                                               "MPAA": item['mpaa'],
                                                               "Playcount": item2['playcount'],
                                                               "Director": director,
@@ -339,7 +342,6 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                     plot = item['plot']
                 if "cast" in item:
                     cast = _get_cast(item['cast'])
-                rating = str(round(float(item['rating']), 1))
                 if "director" in item:
                     director = " / ".join(item['director'])
                 if "writer" in item:
@@ -352,7 +354,7 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                                                       "Premiered": item['firstaired'],
                                                       "Plot": plot,
                                                       "TVshowTitle": item['showtitle'],
-                                                      "Rating": rating,
+                                                      "Rating": str(float(item['rating'])),
                                                       "Playcount": item['playcount'],
                                                       "Director": director,
                                                       "Writer": writer,
@@ -438,16 +440,13 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
         if 'result' in json_query and 'albums' in json_query['result']:
             count = 0
             for item in json_query['result']['albums']:
-                rating = str(item['rating'])
-                if rating == '48':
-                    rating = ''
                 liz = xbmcgui.ListItem(item['title'])
                 liz.setInfo(type="Music", infoLabels={"Title": item['title']})
                 if item['artist']:
                     liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0],
                                                           "Genre": " / ".join(item['genre']),
                                                           "Year": item['year'],
-                                                          "Rating": rating,
+                                                          "Rating": str(item['rating']),
                                                           "mediatype": "album"})
                 liz.setProperty("Album_Mood", " / ".join(item['mood']))
                 liz.setProperty("Album_Style", " / ".join(item['style']))
