@@ -22,10 +22,20 @@
 import sys
 import xbmc
 import xbmcgui
+import xbmcaddon
+import xbmcplugin
+import library
+
 if sys.version_info < (2, 7):
     import simplejson
 else:
     import json as simplejson
+
+ADDON = xbmcaddon.Addon()
+ADDON_VERSION = ADDON.getAddonInfo('version')
+ADDON_NAME = ADDON.getAddonInfo('name')
+ADDON_LANGUAGE = ADDON.getLocalizedString
+LIBRARY = library.LibraryFunctions()
 
 
 def get_playlist_stats(path):
@@ -84,3 +94,526 @@ def get_playlist_stats(path):
         WINDOW.setProperty('PlaylistUnWatched', str(numitems - played))
         WINDOW.setProperty('PlaylistEpisodes', str(episodes))
         WINDOW.setProperty('PlaylistEpisodesUnWatched', str(episodes - watchedepisodes))
+
+
+def _get_cast(castData):
+    listCast = []
+    listCastAndRole = []
+    for castmember in castData:
+        listCast.append(castmember["name"])
+        listCastAndRole.append((castmember["name"], castmember["role"]))
+    return [listCast, listCastAndRole]
+
+
+def _combine_by_date(liz_a, date_a, liz_b, date_b, limit, settinglimit):
+    count = 0
+    full_liz = liz_a[:]
+
+    for itemIndex, itemDate in enumerate(date_b):
+        added = False
+        for compareIndex, compareDate in enumerate(date_a):
+            if compareIndex < count or count > settinglimit:
+                continue
+            if itemDate > compareDate:
+                full_liz.insert(count, liz_b[itemIndex])
+                date_a.insert(count, itemDate)
+                added = True
+                break
+            count += 1
+        if not added and count < settinglimit:
+            full_liz.append(liz_b[-1])
+            date_a.append(date_b[-1])
+
+    # Limit the results
+    if limit is not -1:
+        full_liz = full_liz[:limit]
+    full_liz = full_liz[:settinglimit]
+
+    return full_liz
+
+
+def play_album(album):
+    xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": "Player.Open",
+                        "params": { "item": { "albumid": %d } }, "id": 1 }''' % int(album))
+    # Return ResolvedUrl as failed, as we've taken care of what to play
+    xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=False, listitem=xbmcgui.ListItem())
+
+
+def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+
+    count = 0
+    if json_query:
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'movies' in json_query['result']:
+            for item in json_query['result']['movies']:
+                watched = False
+                if item['playcount'] >= 1:
+                    watched = True
+                if not plot_enable and not watched:
+                    plot = ADDON_LANGUAGE(32014)
+                else:
+                    plot = item['plot']
+                if len(item['studio']) > 0:
+                    studio = item['studio'][0]
+                else:
+                    studio = ""
+                if len(item['country']) > 0:
+                    country = item['country'][0]
+                else:
+                    country = ""
+                if "cast" in item:
+                    cast = _get_cast(item['cast'])
+
+                # create a list item
+                liz = xbmcgui.ListItem(item['title'])
+                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
+                liz.setInfo(type="Video", infoLabels={"OriginalTitle": item['originaltitle']})
+                liz.setInfo(type="Video", infoLabels={"Year": item['year']})
+                liz.setInfo(type="Video", infoLabels={"Genre": " / ".join(item['genre'])})
+                liz.setInfo(type="Video", infoLabels={"Studio": studio})
+                liz.setInfo(type="Video", infoLabels={"Country": country})
+                liz.setInfo(type="Video", infoLabels={"Plot": plot})
+                liz.setInfo(type="Video", infoLabels={"PlotOutline": item['plotoutline']})
+                liz.setInfo(type="Video", infoLabels={"Tagline": item['tagline']})
+                liz.setInfo(type="Video", infoLabels={"Rating": str(float(item['rating']))})
+                liz.setInfo(type="Video", infoLabels={"Votes": item['votes']})
+                liz.setInfo(type="Video", infoLabels={"MPAA": item['mpaa']})
+                liz.setInfo(type="Video", infoLabels={"Director": " / ".join(item['director'])})
+                liz.setInfo(type="Video", infoLabels={"mediatype": "movie"})
+                if "writer" in item:
+                    liz.setInfo(type="Video", infoLabels={"Writer": " / ".join(item['writer'])})
+                if "cast" in item:
+                    liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
+                    liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
+                liz.setInfo(type="Video", infoLabels={"Trailer": item['trailer']})
+                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
+                liz.setProperty("resumetime", str(item['resume']['position']))
+                liz.setProperty("totaltime", str(item['resume']['total']))
+                liz.setProperty("type", ADDON_LANGUAGE(list_type))
+
+                liz.setArt(item['art'])
+                liz.setThumbnailImage(item['art'].get('poster', ''))
+                liz.setIconImage('DefaultVideoCover.png')
+                liz.setProperty("dbid", str(item['movieid']))
+                liz.setProperty("imdbnumber", str(item['imdbnumber']))
+                liz.setProperty("fanart_image", item['art'].get('fanart', ''))
+                hasVideo = False
+                for key, value in item['streamdetails'].iteritems():
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
+
+                    # if duration wasnt in the streaminfo try adding the scraped one
+                if not hasVideo:
+                    stream = {'duration': item['runtime']}
+                    liz.addStreamInfo("video", stream)
+                full_liz.append((item['file'], liz, False))
+
+                if date_type is not None:
+                    date_liz.append(item[date_type])
+
+                count += 1
+                if count == limit:
+                    break
+
+        del json_query
+
+
+def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None, favourites=False):
+    prefix = "recommended-episodes" if not favourites else "favouriteepisodes"
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+    if json_query:
+        # First unplayed episode of recent played tvshows
+        json_query = simplejson.loads(json_query)
+        if "result" in json_query and 'tvshows' in json_query['result']:
+            count = 0
+            for item in json_query['result']['tvshows']:
+                if xbmc.abortRequested:
+                    break
+                json_query2 = xbmcgui.Window(10000).getProperty(prefix + "-data-" + str(item['tvshowid']))
+                if json_query2:
+                    json_query2 = simplejson.loads(json_query2)
+                    if "result" in json_query2 and json_query2['result'] is not None and 'episodes' in json_query2['result']:
+                        for item2 in json_query2['result']['episodes']:
+                            episode = "%.2d" % float(item2['episode'])
+                            season = "%.2d" % float(item2['season'])
+                            episodeno = "s%se%s" % (season, episode)
+                            break
+                        watched = False
+                        if item2['playcount'] >= 1:
+                            watched = True
+                        if not plot_enable and not watched:
+                            plot = ADDON_LANGUAGE(32014)
+                        else:
+                            plot = item2['plot']
+                        if len(item['studio']) > 0:
+                            studio = item['studio'][0]
+                        else:
+                            studio = ""
+                        if "cast" in item2:
+                            cast = _get_cast(item2['cast'])
+                        rating = str(round(float(item2['rating']), 1))
+                        if "director" in item2:
+                            director = " / ".join(item2['director'])
+                        if "writer" in item2:
+                            writer = " / ".join(item2['writer'])
+
+                        liz = xbmcgui.ListItem(item2['title'])
+                        liz.setInfo(type="Video", infoLabels={"Title": item2['title']})
+                        liz.setInfo(type="Video", infoLabels={"Episode": item2['episode']})
+                        liz.setInfo(type="Video", infoLabels={"Season": item2['season']})
+                        liz.setInfo(type="Video", infoLabels={"Studio": studio})
+                        liz.setInfo(type="Video", infoLabels={"Premiered": item2['firstaired']})
+                        liz.setInfo(type="Video", infoLabels={"Plot": plot})
+                        liz.setInfo(type="Video", infoLabels={"TVshowTitle": item2['showtitle']})
+                        liz.setInfo(type="Video", infoLabels={"Rating": rating})
+                        liz.setInfo(type="Video", infoLabels={"MPAA": item['mpaa']})
+                        liz.setInfo(type="Video", infoLabels={"Playcount": item2['playcount']})
+                        liz.setInfo(type="Video", infoLabels={"Director": director})
+                        liz.setInfo(type="Video", infoLabels={"Writer": writer})
+                        liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
+                        liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
+                        liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+                        liz.setProperty("episodeno", episodeno)
+                        liz.setProperty("resumetime", str(item2['resume']['position']))
+                        liz.setProperty("totaltime", str(item2['resume']['total']))
+                        liz.setProperty("type", ADDON_LANGUAGE(list_type))
+                        liz.setArt(item2['art'])
+                        liz.setThumbnailImage(item2['art'].get('thumb', ''))
+                        liz.setIconImage('DefaultTVShows.png')
+                        liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart', ''))
+                        liz.setProperty("dbid", str(item2['episodeid']))
+                        hasVideo = False
+                        for key, value in item2['streamdetails'].iteritems():
+                            for stream in value:
+                                if 'video' in key:
+                                    hasVideo = True
+                                liz.addStreamInfo(key, stream)
+
+                        # if duration wasnt in the streaminfo try adding the scraped one
+                        if not hasVideo:
+                            stream = {'duration': item2['runtime']}
+                            liz.addStreamInfo("video", stream)
+
+                        full_liz.append((item2['file'], liz, False))
+
+                        if date_type is not None:
+                            date_liz.append(item[date_type])
+
+                        count += 1
+                        if count == limit:
+                            break
+                if count == limit:
+                    break
+        del json_query
+
+
+def parse_tvshows_favourite(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    return parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enable, limit, date_liz, date_type, favourites=True)
+
+
+def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+    if json_query:
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'episodes' in json_query['result']:
+            count = 0
+            for item in json_query['result']['episodes']:
+                episode = "%.2d" % float(item['episode'])
+                season = "%.2d" % float(item['season'])
+                episodeno = "s%se%s" % (season, episode)
+                watched = False
+                if item['playcount'] >= 1:
+                    watched = True
+                if not plot_enable and not watched:
+                    plot = ADDON_LANGUAGE(32014)
+                else:
+                    plot = item['plot']
+                if "cast" in item:
+                    cast = _get_cast(item['cast'])
+                rating = str(round(float(item['rating']), 1))
+                if "director" in item:
+                    director = " / ".join(item['director'])
+                if "writer" in item:
+                    writer = " / ".join(item['writer'])
+
+                liz = xbmcgui.ListItem(item['title'])
+                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
+                liz.setInfo(type="Video", infoLabels={"Episode": item['episode']})
+                liz.setInfo(type="Video", infoLabels={"Season": item['season']})
+                liz.setInfo(type="Video", infoLabels={"Premiered": item['firstaired']})
+                liz.setInfo(type="Video", infoLabels={"Plot": plot})
+                liz.setInfo(type="Video", infoLabels={"TVshowTitle": item['showtitle']})
+                liz.setInfo(type="Video", infoLabels={"Rating": rating})
+                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
+                liz.setInfo(type="Video", infoLabels={"Director": director})
+                liz.setInfo(type="Video", infoLabels={"Writer": writer})
+                liz.setInfo(type="Video", infoLabels={"Cast": cast[0]})
+                liz.setInfo(type="Video", infoLabels={"CastAndRole": cast[1]})
+                liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+                liz.setProperty("episodeno", episodeno)
+                liz.setProperty("resumetime", str(item['resume']['position']))
+                liz.setProperty("totaltime", str(item['resume']['total']))
+                liz.setProperty("type", ADDON_LANGUAGE(list_type))
+                liz.setArt(item['art'])
+                liz.setThumbnailImage(item['art'].get('thumb', ''))
+                liz.setIconImage('DefaultTVShows.png')
+                liz.setProperty("dbid", str(item['episodeid']))
+                liz.setProperty("fanart_image", item['art'].get('tvshow.fanart', ''))
+
+                hasVideo = False
+                for key, value in item['streamdetails'].iteritems():
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
+
+                # if duration wasnt in the streaminfo try adding the scraped one
+                if not hasVideo:
+                    stream = {'duration': item['runtime']}
+                    liz.addStreamInfo("video", stream)
+                full_liz.append((item['file'], liz, False))
+
+                if date_type is not None:
+                    date_liz.append(item[date_type])
+
+                count += 1
+                if count == limit:
+                    break
+        del json_query
+
+
+def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+
+    if json_query:
+        json_query = simplejson.loads(json_query)
+        count = 0
+        if 'result' in json_query and 'songs' in json_query['result']:
+            for item in json_query['result']['songs']:
+                liz = xbmcgui.ListItem(item['title'])
+                liz.setInfo(type="Music", infoLabels={"Title": item['title']})
+                if item['artist']:
+                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0]})
+                liz.setInfo(type="Music", infoLabels={"Genre": " / ".join(item['genre'])})
+                liz.setInfo(type="Music", infoLabels={"Year": item['year']})
+                liz.setInfo(type="Music", infoLabels={"Rating": str(float(item['rating']))})
+                liz.setInfo(type="Music", infoLabels={"Album": item['album']})
+                liz.setInfo(type="Music", infoLabels={"mediatype": "song"})
+                liz.setProperty("type", ADDON_LANGUAGE(list_type))
+
+                liz.setThumbnailImage(item['thumbnail'])
+                liz.setIconImage('DefaultMusicSongs.png')
+                liz.setProperty("fanart_image", item['fanart'])
+                liz.setProperty("dbid", str(item['songid']))
+                full_liz.append((item['file'], liz, False))
+
+                if date_type is not None:
+                    date_liz.append(item[date_type])
+
+                count += 1
+                if count == limit:
+                    break
+        del json_query
+
+
+def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+
+    if json_query:
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'albums' in json_query['result']:
+            count = 0
+            for item in json_query['result']['albums']:
+                rating = str(item['rating'])
+                if rating == '48':
+                    rating = ''
+                liz = xbmcgui.ListItem(item['title'])
+                liz.setInfo(type="Music", infoLabels={"Title": item['title']})
+                if item['artist']:
+                    liz.setInfo(type="Music", infoLabels={"Artist": item['artist'][0]})
+                liz.setInfo(type="Music", infoLabels={"Genre": " / ".join(item['genre'])})
+                liz.setInfo(type="Music", infoLabels={"Year": item['year']})
+                liz.setInfo(type="Music", infoLabels={"Rating": rating})
+                liz.setInfo(type="Music", infoLabels={"mediatype": "album"})
+                liz.setProperty("Album_Mood", " / ".join(item['mood']))
+                liz.setProperty("Album_Style", " / ".join(item['style']))
+                liz.setProperty("Album_Theme", " / ".join(item['theme']))
+                liz.setProperty("Album_Type", " / ".join(item['type']))
+                liz.setProperty("Album_Label", item['albumlabel'])
+                liz.setProperty("Album_Description", item['description'])
+                liz.setProperty("type", ADDON_LANGUAGE(list_type))
+
+                liz.setThumbnailImage(item['thumbnail'])
+                liz.setIconImage('DefaultAlbumCover.png')
+                liz.setProperty("fanart_image", item['fanart'])
+                liz.setProperty("dbid", str(item['albumid']))
+
+                # Path will call plugin again, with the album id
+                path = sys.argv[0] + "?type=play_album&album=" + str(item['albumid'])
+
+                if date_type is not None:
+                    date_liz.append(item[date_type])
+
+                full_liz.append((path, liz, False))
+                count += 1
+                if count == limit:
+                    break
+        del json_query
+
+
+def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit, date_liz=None, date_type=None):
+    json_query = _get_data(request, usecache)
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+        json_query = _get_data(request, usecache)
+
+    count = 0
+    if json_query:
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'musicvideos' in json_query['result']:
+            for item in json_query['result']['musicvideos']:
+                watched = False
+                if item['playcount'] >= 1:
+                    watched = True
+                if len(item['studio']) > 0:
+                    studio = item['studio'][0]
+                else:
+                    studio = ""
+                if not plot_enable and not watched:
+                    plot = ADDON_LANGUAGE(32014)
+                else:
+                    plot = item['plot']
+                if "director" in item:
+                    director = " / ".join(item['director'])
+
+                # create a list item
+                liz = xbmcgui.ListItem(item['title'])
+                liz.setInfo(type="Video", infoLabels={"Title": item['title']})
+                liz.setInfo(type="Video", infoLabels={"Year": item['year']})
+                liz.setInfo(type="Video", infoLabels={"Genre": " / ".join(item['genre'])})
+                liz.setInfo(type="Video", infoLabels={"Studio": studio})
+                liz.setInfo(type="Video", infoLabels={"Plot": plot})
+                liz.setInfo(type="Video", infoLabels={"Artist": item['artist']})
+                liz.setInfo(type="Video", infoLabels={"Director": director})
+                liz.setInfo(type="Video", infoLabels={"Playcount": item['playcount']})
+                liz.setInfo(type="Video", infoLabels={"mediatype": "musicvideo"})
+                liz.setProperty("resumetime", str(item['resume']['position']))
+                liz.setProperty("totaltime", str(item['resume']['total']))
+                liz.setProperty("type", ADDON_LANGUAGE(list_type))
+
+                liz.setArt(item['art'])
+                liz.setThumbnailImage(item['art'].get('poster', ''))
+                liz.setIconImage('DefaultVideoCover.png')
+                liz.setProperty("dbid", str(item['musicvideoid']))
+                liz.setProperty("fanart_image", item['art'].get('fanart', ''))
+                hasVideo = False
+                for key, value in item['streamdetails'].iteritems():
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
+
+                    # if duration wasnt in the streaminfo try adding the scraped one
+                if not hasVideo:
+                    stream = {'duration': item['runtime']}
+                    liz.addStreamInfo("video", stream)
+                full_liz.append((item['file'], liz, False))
+
+                if date_type is not None:
+                    date_liz.append(item[date_type])
+
+                count += 1
+                if count == limit:
+                    break
+
+        del json_query
+
+
+def parse_dbid(dbtype, dbid, full_liz):
+    if dbtype == "movie":
+        method = '"VideoLibrary.GetMovieDetails"'
+        param = '"movieid"'
+    elif dbtype == "episode":
+        method = '"VideoLibrary.GetEpisodeDetails"'
+        param = '"episodeid"'
+    elif dbtype == "song":
+        method = '"AudioLibrary.GetSongDetails"'
+        param = '"songid"'
+
+    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
+                                                            "params": {%s: %d,
+                                                            "properties": ["file"]},
+                                                            "id": 1 }''' % (method, param, int(dbid)))
+    while json_query == "LOADING":
+        xbmc.sleep(100)
+    if json_query:
+        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'moviedetails' in json_query['result']:
+            item = json_query['result']['moviedetails']
+        elif 'result' in json_query and 'episodedetails' in json_query['result']:
+            item = json_query['result']['episodedetails']
+        elif 'result' in json_query and 'songdetails' in json_query['result']:
+            item = json_query['result']['songdetails']
+        # create a list item
+        liz = xbmcgui.ListItem(item['label'])
+        if dbtype == "movie":
+            liz.setInfo(type="Video", infoLabels={"mediatype": "movie"})
+        if dbtype == "episode":
+            liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+        if dbtype == "song":
+            liz.setInfo(type="Music", infoLabels={"mediatype": "song"})
+        full_liz.append((item['file'], liz, False))
+
+        del json_query
+
+
+def _get_data(request, usecache):
+    if request == "randommovies":
+        return LIBRARY._fetch_random_movies(usecache)
+    elif request == "recentmovies":
+        return LIBRARY._fetch_recent_movies(usecache)
+    elif request == "recommendedmovies":
+        return LIBRARY._fetch_recommended_movies(usecache)
+
+    elif request == "randomepisodes":
+        return LIBRARY._fetch_random_episodes(usecache)
+    elif request == "recentepisodes":
+        return LIBRARY._fetch_recent_episodes(usecache)
+    elif request == "recommendedepisodes":
+        return LIBRARY._fetch_recommended_episodes(usecache)
+    elif request == "favouriteepisodes":
+        return LIBRARY._fetch_favourite_episodes(usecache)
+
+    elif request == "randomalbums":
+        return LIBRARY._fetch_random_albums(usecache)
+    elif request == "recentalbums":
+        return LIBRARY._fetch_recent_albums(usecache)
+    elif request == "recommendedalbums":
+        return LIBRARY._fetch_recommended_albums(usecache)
+
+    elif request == "randomsongs":
+        return LIBRARY._fetch_random_songs(usecache)
+
+    elif request == "randommusicvideos":
+        return LIBRARY._fetch_random_musicvideos(usecache)
+    elif request == "recentmusicvideos":
+        return LIBRARY._fetch_recent_musicvideos(usecache)
