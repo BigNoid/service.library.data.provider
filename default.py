@@ -114,6 +114,18 @@ class Main:
                 xbmcplugin.setContent(int(sys.argv[1]), 'musicvideos')
                 self.parse_musicvideos('recentmusicvideos', 32023, full_liz)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
+            elif content_type == "movie":
+                xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+                self.parse_dbid('movie', self.dbid, full_liz)
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
+            elif content_type == "episode":
+                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+                self.parse_dbid('episode', self.dbid, full_liz)
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
+            elif content_type == "song":
+                xbmcplugin.setContent(int(sys.argv[1]), 'songs')
+                self.parse_dbid('song', self.dbid, full_liz)
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == 'playliststats':
                 data.get_playlist_stats(self.path)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
@@ -152,6 +164,44 @@ class Main:
         global PLOT_ENABLE
         PLOT_ENABLE = ADDON.getSetting("plot_enable") == 'true'
         self.RANDOMITEMS_UNPLAYED = ADDON.getSetting("randomitems_unplayed") == 'true'
+
+    def parse_dbid(self, dbtype, dbid, full_liz):
+        if dbtype == "movie":
+            method = '"VideoLibrary.GetMovieDetails"'
+            param = '"movieid"'
+        elif dbtype == "episode":
+            method = '"VideoLibrary.GetEpisodeDetails"'
+            param = '"episodeid"'
+        elif dbtype == "song":
+            method = '"AudioLibrary.GetSongDetails"'
+            param = '"songid"'
+
+        json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
+                                                                "params": {%s: %d,
+                                                                "properties": ["file"]},
+                                                                "id": 1 }''' % (method, param, int(dbid)))
+        while json_query == "LOADING":
+            xbmc.sleep(100)
+        if json_query:
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+            json_query = simplejson.loads(json_query)
+            if 'result' in json_query and 'moviedetails' in json_query['result']:
+                item = json_query['result']['moviedetails']
+            elif 'result' in json_query and 'episodedetails' in json_query['result']:
+                item = json_query['result']['episodedetails']
+            elif 'result' in json_query and 'songdetails' in json_query['result']:
+                item = json_query['result']['songdetails']
+            # create a list item
+            liz = xbmcgui.ListItem(item['label'])
+            if dbtype == "movie":
+                liz.setInfo(type="Video", infoLabels={"mediatype": "movie"})
+            if dbtype == "episode":
+                liz.setInfo(type="Video", infoLabels={"mediatype": "episode"})
+            if dbtype == "song":
+                liz.setInfo(type="Music", infoLabels={"mediatype": "song"})
+            full_liz.append((item['file'], liz, False))
+
+            del json_query
 
     def parse_movies(self, request, list_type, full_liz, date_liz=None, date_type=None):
         json_query = self._get_data(request)
@@ -638,6 +688,8 @@ class Main:
         if self.USECACHE is not False:
             self.USECACHE = True
         self.LIMIT = int(params.get("limit", "-1"))
+        self.dbid = params.get("dbid", "")
+
 
 log('script version %s started' % ADDON_VERSION)
 Main()
