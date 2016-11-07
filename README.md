@@ -143,7 +143,7 @@ Albums:
 Playliststats is used when a playlist or videonode is set as the onclick action in the (Home) menu.
 Example:
 Put a list in your Home.xml:
-```xml
+```
 <control type="list" id="43260">
 	<posx>0</posx>
 	<posy>0</posy>
@@ -164,14 +164,15 @@ The following properties are available when the menu item containing the playlis
 -	Window(Home).Property(PlaylistUnWatched)
 -	Window(Home).Property(PlaylistEpisodes)
 -	Window(Home).Property(PlaylistEpisodesUnWatched)
-```
+
 Single item:
 movie/episode/song tags need an additional dbid tag with the specified databaseid. 
 It will fill a list with the specified item. May be useful to open an infodialog in places it's not supported (eg Fullscreen media).
 Example:
-plugin://service.library.data.provider?type=$INFO[ListItem.DBType]&amp;dbid=$INFO[ListItem.DBID]
-
 ```
+plugin://service.library.data.provider?type=$INFO[ListItem.DBType]&amp;dbid=$INFO[ListItem.DBID]
+```
+
 Actors:
 Fill a list with the actors from the specified library item.
  - ListItem.Label - Name
@@ -182,7 +183,8 @@ Additional parameters:
 - dbtype (optional, 'movie', 'tvshow', 'episode' or 'musicvideo') 
 For use in fullscreen video, omit the dbtype parameter.
 Example:
+```
 plugin://service.library.data.provider?type=actors&amp;dbid=$INFO[ListItem.DBID]&amp;dbtype=$INFO[ListItem.DBType]
-
+```
 
 
