@@ -105,6 +105,42 @@ def _get_cast(castData):
     return [listCast, listCastAndRole]
 
 
+def get_actors(full_liz):
+    info = xbmc.Player().getVideoInfoTag()
+    dbid = info.getDbId()
+    if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
+        method = '"VideoLibrary.GetMovieDetails"'
+        param = '"movieid"'
+    elif xbmc.getCondVisibility("VideoPlayer.Content(episodes)"):
+        method = '"VideoLibrary.GetEpisodeDetails"'
+        param = '"episodeid"'
+    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
+                                                            "params": {%s: %d,
+                                                            "properties": ["title", "file", "cast"]},
+                                                            "id": 1 }''' % (method, param, int(dbid)))
+    if json_query:
+        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        json_query = simplejson.loads(json_query)
+        if 'result' in json_query and 'moviedetails' in json_query['result']:
+            for item in json_query['result']['moviedetails']['cast']:
+                liz = xbmcgui.ListItem(item["name"])
+                liz.setLabel(item["name"])
+                liz.setLabel2(item["role"])
+                liz.setThumbnailImage(item["thumbnail"])
+                liz.setIconImage('DefaultActor.png')
+                full_liz.append((item["thumbnail"], liz, False))
+        elif 'result' in json_query and 'episodedetails' in json_query['result']:
+            for item in json_query['result']['episodedetails']['cast']:
+                liz = xbmcgui.ListItem(item["name"])
+                liz.setLabel(item["name"])
+                liz.setLabel2(item["role"])
+                liz.setThumbnailImage(item["thumbnail"])
+                liz.setIconImage('DefaultActor.png')
+                full_liz.append((item["thumbnail"], liz, False))
+
+        del json_query
+
+
 def _combine_by_date(liz_a, date_a, liz_b, date_b, limit, settinglimit):
     count = 0
     full_liz = liz_a[:]
