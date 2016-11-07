@@ -123,7 +123,7 @@ class Main:
                 data.get_playlist_stats(self.path)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
             elif content_type == 'actors':
-                data.get_actors(self.dbid, full_liz)
+                data.get_actors(self.dbid, self.dbtype, full_liz)
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), full_liz)
 
             # Play an albums
@@ -174,6 +174,7 @@ class Main:
             self.USECACHE = True
         self.LIMIT = int(params.get("limit", "-1"))
         self.dbid = params.get("dbid", "")
+        self.dbtype = params.get("dbtype", False)
 
 
 log('script version %s started' % ADDON_VERSION)

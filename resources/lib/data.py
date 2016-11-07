@@ -105,17 +105,8 @@ def _get_cast(castData):
     return [listCast, listCastAndRole]
 
 
-def get_actors(dbid, full_liz):
-    if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
-        method = '"VideoLibrary.GetMovieDetails"'
-        param = '"movieid"'
-    elif xbmc.getCondVisibility("VideoPlayer.Content(episodes)"):
-        method = '"VideoLibrary.GetEpisodeDetails"'
-        param = '"episodeid"'
-    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
-                                                            "params": {%s: %d,
-                                                            "properties": ["title", "file", "cast"]},
-                                                            "id": 1 }''' % (method, param, int(dbid)))
+def get_actors(dbid, dbtype, full_liz):
+    json_query = _get_query(dbtype, dbid)
     if json_query:
         json_query = unicode(json_query, 'utf-8', errors='ignore')
         json_query = simplejson.loads(json_query)
@@ -577,20 +568,7 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
 
 
 def parse_dbid(dbtype, dbid, full_liz):
-    if dbtype == "movie":
-        method = '"VideoLibrary.GetMovieDetails"'
-        param = '"movieid"'
-    elif dbtype == "episode":
-        method = '"VideoLibrary.GetEpisodeDetails"'
-        param = '"episodeid"'
-    elif dbtype == "song":
-        method = '"AudioLibrary.GetSongDetails"'
-        param = '"songid"'
-
-    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
-                                                            "params": {%s: %d,
-                                                            "properties": ["file"]},
-                                                            "id": 1 }''' % (method, param, int(dbid)))
+    json_query = _get_query(dbtype, dbid)
     while json_query == "LOADING":
         xbmc.sleep(100)
     if json_query:
@@ -646,3 +624,37 @@ def _get_data(request, usecache):
         return LIBRARY._fetch_random_musicvideos(usecache)
     elif request == "recentmusicvideos":
         return LIBRARY._fetch_recent_musicvideos(usecache)
+
+
+def _get_query(dbtype, dbid):
+    if not dbtype:
+        if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
+            method = '"VideoLibrary.GetMovieDetails"'
+            param = '"movieid"'
+        elif xbmc.getCondVisibility("VideoPlayer.Content(episodes)"):
+            method = '"VideoLibrary.GetEpisodeDetails"'
+            param = '"episodeid"'
+        elif xbmc.getCondVisibility("VideoPlayer.Content(musicvideos)"):
+            method = '"VideoLibrary.GetMusicVideoDetails"'
+            param = '"musicvideoid"'
+    else:
+        if dbtype == "movie":
+            method = '"VideoLibrary.GetMovieDetails"'
+            param = '"movieid"'
+        elif dbtype == "tvshow":
+            method = '"VideoLibrary.GetTVShowDetails"'
+            param = '"tvshowid"'
+        elif dbtype == "episode":
+            method = '"VideoLibrary.GetEpisodeDetails"'
+            param = '"episodeid"'
+        elif dbtype == "musicvideo":
+            method = '"VideoLibrary.GetMusicVideoDetails"'
+            param = '"musicvideoid"'
+        elif dbtype == "song":
+            method = '"AudioLibrary.GetSongDetails"'
+            param = '"songid"'
+    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
+                                                            "params": {%s: %d,
+                                                            "properties": ["title", "file", "cast"]},
+                                                            "id": 1 }''' % (method, param, int(dbid)))
+    return json_query
