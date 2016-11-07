@@ -105,9 +105,7 @@ def _get_cast(castData):
     return [listCast, listCastAndRole]
 
 
-def get_actors(full_liz):
-    info = xbmc.Player().getVideoInfoTag()
-    dbid = info.getDbId()
+def get_actors(dbid, full_liz):
     if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
         method = '"VideoLibrary.GetMovieDetails"'
         param = '"movieid"'
@@ -126,17 +124,19 @@ def get_actors(full_liz):
                 liz = xbmcgui.ListItem(item["name"])
                 liz.setLabel(item["name"])
                 liz.setLabel2(item["role"])
-                liz.setThumbnailImage(item["thumbnail"])
+                if "thumbnail" in item:
+                    liz.setThumbnailImage(item["thumbnail"])
                 liz.setIconImage('DefaultActor.png')
-                full_liz.append((item["thumbnail"], liz, False))
+                full_liz.append(("", liz, False))
         elif 'result' in json_query and 'episodedetails' in json_query['result']:
             for item in json_query['result']['episodedetails']['cast']:
                 liz = xbmcgui.ListItem(item["name"])
                 liz.setLabel(item["name"])
                 liz.setLabel2(item["role"])
-                liz.setThumbnailImage(item["thumbnail"])
+                if "thumbnail" in item:
+                    liz.setThumbnailImage(item["thumbnail"])
                 liz.setIconImage('DefaultActor.png')
-                full_liz.append((item["thumbnail"], liz, False))
+                full_liz.append(("", liz, False))
 
         del json_query
 
