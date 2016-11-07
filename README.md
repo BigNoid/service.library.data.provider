@@ -33,6 +33,10 @@ Available tags:
 -   recentalbums
 -   recommendedalbums
 -	playliststats
+-	movie
+-	episode
+-	song
+-	actors
 
 Available infolabels:
 
@@ -160,6 +164,25 @@ The following properties are available when the menu item containing the playlis
 -	Window(Home).Property(PlaylistUnWatched)
 -	Window(Home).Property(PlaylistEpisodes)
 -	Window(Home).Property(PlaylistEpisodesUnWatched)
+```
+Single item:
+movie/episode/song tags need an additional dbid tag with the specified databaseid. 
+It will fill a list with the specified item. May be useful to open an infodialog in places it's not supported (eg Fullscreen media).
+Example:
+plugin://service.library.data.provider?type=$INFO[ListItem.DBType]&amp;dbid=$INFO[ListItem.DBID]
+
+```
+Actors:
+Fill a list with the actors from the specified library item.
+ - ListItem.Label - Name
+ - ListItem.Label2 - Role
+ - ListItem.Icon - Actor thumbnail `DefaultActor.png`
+Additional parameters:
+- dbid (database id)
+- dbtype (optional, 'movie', 'tvshow', 'episode' or 'musicvideo') 
+For use in fullscreen video, omit the dbtype parameter.
+Example:
+plugin://service.library.data.provider?type=actors&amp;dbid=$INFO[ListItem.DBID]&amp;dbtype=$INFO[ListItem.DBType]
 
 
 
