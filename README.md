@@ -42,7 +42,7 @@ Available infolabels:
 
 ListItem.Property(type) shows with what option the script was run.
 
-Movies:
+### Movies:
 -	ListItem.Title
 -	ListItem.OriginalTitle
 -	ListItem.Year
@@ -81,7 +81,7 @@ Movies:
 -	ListItem.AudioLanguage
 -	ListItem.SubtitleLanguage
 
-Episodes:
+### Episodes:
 -	ListItem.Title
 -	ListItem.Episode
 -	ListItem.Season
@@ -111,7 +111,7 @@ Episodes:
 -	ListItem.Art(tvshow.landscape)
 -	ListItem.Art(fanart)
 
-Songs:
+### Songs:
 -	ListItem.Title
 -	ListItem.Artist
 -	ListItem.Genre
@@ -123,7 +123,7 @@ Songs:
 -	ListItem.Property(fanart_image)
 -	ListItem.Property(dbid)
 
-Albums:
+### Albums:
 -	ListItem.Title
 -	ListItem.Artist
 -	ListItem.Genre
@@ -140,6 +140,7 @@ Albums:
 -	ListItem.Property(fanart_image)
 -	ListItem.Property(dbid)
 
+### Playliststats
 Playliststats is used when a playlist or videonode is set as the onclick action in the (Home) menu.
 Example:
 Put a list in your Home.xml:
@@ -165,7 +166,7 @@ The following properties are available when the menu item containing the playlis
 -	Window(Home).Property(PlaylistEpisodes)
 -	Window(Home).Property(PlaylistEpisodesUnWatched)
 
-Single item:
+### Single item
 movie/episode/song tags need an additional dbid tag with the specified databaseid. 
 It will fill a list with the specified item. May be useful to open an infodialog in places it's not supported (eg Fullscreen media).
 Example:
@@ -173,7 +174,7 @@ Example:
 plugin://service.library.data.provider?type=$INFO[ListItem.DBType]&amp;dbid=$INFO[ListItem.DBID]
 ```
 
-Actors:
+### Actors
 Fill a list with the actors from the specified library item.
  - ListItem.Label - Name
  - ListItem.Label2 - Role
