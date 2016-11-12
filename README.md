@@ -182,7 +182,7 @@ Fill a list with the actors from the specified library item.
 
 Additional parameters:
 - dbid (database id)
-- dbtype (optional, 'movie', 'tvshow', 'episode' or 'musicvideo') 
+- dbtype (optional, `movie`, `tvshow`, `episode` or `musicvideo`) 
 For use in fullscreen video, omit the dbtype parameter.
 Example:
 ```
