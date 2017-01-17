@@ -96,42 +96,7 @@ def get_playlist_stats(path):
         WINDOW.setProperty('PlaylistEpisodesUnWatched', str(episodes - watchedepisodes))
 
 
-def _get_cast(castData):
-    listCast = []
-    listCastAndRole = []
-    for castmember in castData:
-        listCast.append(castmember["name"])
-        listCastAndRole.append((castmember["name"], castmember["role"]))
-    return [listCast, listCastAndRole]
-
-
-def getPlot(plot, plot_enable, watched):
-    if watched >= 1:
-        watched = True
-    else:
-        watched = False
-    if not plot_enable and not watched:
-        plot = ADDON_LANGUAGE(32014)
-    return plot
-
-
-def getFirstItem(item):
-    if len(item) > 0:
-        item = item[0]
-    else:
-        item = ""
-    return item
-
-
-def getJoinedItem(item):
-    if len(item) > 0:
-        item = " / ".join(item)
-    else:
-        item = ""
-    return item
-
-
-def getActors(dbid, dbtype, full_liz):
+def get_actors(dbid, dbtype, full_liz):
     json_query = _get_query(dbtype, dbid)
     if json_query:
         json_query = unicode(json_query, 'utf-8', errors='ignore')
@@ -149,33 +114,6 @@ def getActors(dbid, dbtype, full_liz):
             full_liz.append(("", liz, False))
 
         del json_query
-
-
-def _combine_by_date(liz_a, date_a, liz_b, date_b, limit, settinglimit):
-    count = 0
-    full_liz = liz_a[:]
-
-    for itemIndex, itemDate in enumerate(date_b):
-        added = False
-        for compareIndex, compareDate in enumerate(date_a):
-            if compareIndex < count or count > settinglimit:
-                continue
-            if itemDate > compareDate:
-                full_liz.insert(count, liz_b[itemIndex])
-                date_a.insert(count, itemDate)
-                added = True
-                break
-            count += 1
-        if not added and count < settinglimit:
-            full_liz.append(liz_b[-1])
-            date_a.append(date_b[-1])
-
-    # Limit the results
-    if limit is not -1:
-        full_liz = full_liz[:limit]
-    full_liz = full_liz[:settinglimit]
-
-    return full_liz
 
 
 def play_album(album):
@@ -204,17 +142,17 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setInfo(type="Video", infoLabels={"Title": movie['title'],
                                                       "OriginalTitle": movie['originaltitle'],
                                                       "Year": movie['year'],
-                                                      "Genre": getJoinedItem(movie.get('genre', "")),
-                                                      "Studio": getFirstItem(movie.get('studio', "")),
-                                                      "Country": getFirstItem(movie.get('country', "")),
-                                                      "Plot": getPlot(movie['plot'], plot_enable, movie['playcount']),
+                                                      "Genre": _get_joined_items(movie.get('genre', "")),
+                                                      "Studio": _get_first_item(movie.get('studio', "")),
+                                                      "Country": _get_first_item(movie.get('country', "")),
+                                                      "Plot": _get_plot(movie['plot'], plot_enable, movie['playcount']),
                                                       "PlotOutline": movie['plotoutline'],
                                                       "Tagline": movie['tagline'],
                                                       "Rating": str(float(movie['rating'])),
                                                       "Votes": movie['votes'],
                                                       "MPAA": movie['mpaa'],
-                                                      "Director": getJoinedItem(movie.get('director', "")),
-                                                      "Writer": getJoinedItem(movie.get('writer', "")),
+                                                      "Director": _get_joined_items(movie.get('director', "")),
+                                                      "Writer": _get_joined_items(movie.get('writer', "")),
                                                       "Cast": cast[0],
                                                       "CastAndRole": cast[1],
                                                       "mediatype": "movie",
@@ -281,15 +219,15 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                         liz.setInfo(type="Video", infoLabels={"Title": episode['title'],
                                                               "Episode": episode['episode'],
                                                               "Season": episode['season'],
-                                                              "Studio": getFirstItem(tvshow.get('studio', "")),
+                                                              "Studio": _get_first_item(tvshow.get('studio', "")),
                                                               "Premiered": episode['firstaired'],
-                                                              "Plot": getPlot(episode['plot'], plot_enable, episode['playcount']),
+                                                              "Plot": _get_plot(episode['plot'], plot_enable, episode['playcount']),
                                                               "TVshowTitle": episode['showtitle'],
                                                               "Rating": str(float(episode['rating'])),
                                                               "MPAA": tvshow['mpaa'],
                                                               "Playcount": episode['playcount'],
-                                                              "Director": getJoinedItem(episode.get('director', "")),
-                                                              "Writer": getJoinedItem(episode.get('writer', "")),
+                                                              "Director": _get_joined_items(episode.get('director', "")),
+                                                              "Writer": _get_joined_items(episode.get('writer', "")),
                                                               "Cast": cast[0],
                                                               "CastAndRole": cast[1],
                                                               "mediatype": "episode"})
@@ -352,12 +290,12 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                                                       "Episode": episode['episode'],
                                                       "Season": episode['season'],
                                                       "Premiered": episode['firstaired'],
-                                                      "Plot": getPlot(episode['plot'], plot_enable, episode['playcount']),
+                                                      "Plot": _get_plot(episode['plot'], plot_enable, episode['playcount']),
                                                       "TVshowTitle": episode['showtitle'],
                                                       "Rating": str(float(episode['rating'])),
                                                       "Playcount": episode['playcount'],
-                                                      "Director": getJoinedItem(episode.get('director', "")),
-                                                      "Writer": getJoinedItem(episode.get('writer', "")),
+                                                      "Director": _get_joined_items(episode.get('director', "")),
+                                                      "Writer": _get_joined_items(episode.get('writer', "")),
                                                       "Cast": cast[0],
                                                       "CastAndRole": cast[1],
                                                       "mediatype": "episode"})
@@ -408,7 +346,7 @@ def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_
                 liz.setInfo(type="Music", infoLabels={"Title": song['title']})
                 if song['artist']:
                     liz.setInfo(type="Music", infoLabels={"Artist": song['artist'][0],
-                                                          "Genre": getJoinedItem(song.get('genre', "")),
+                                                          "Genre": _get_joined_items(song.get('genre', "")),
                                                           "Year": song['year'],
                                                           "Rating": str(float(song['rating'])),
                                                           "Album": song['album'],
@@ -444,14 +382,14 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setInfo(type="Music", infoLabels={"Title": album['title']})
                 if album['artist']:
                     liz.setInfo(type="Music", infoLabels={"Artist": album['artist'][0],
-                                                          "Genre": getJoinedItem(album.get('genre', "")),
+                                                          "Genre": _get_joined_items(album.get('genre', "")),
                                                           "Year": album['year'],
                                                           "Rating": str(album['rating']),
                                                           "mediatype": "album"})
-                liz.setProperty("Album_Mood", getJoinedItem(album.get('mood', "")))
-                liz.setProperty("Album_Style", getJoinedItem(album.get('style', "")))
-                liz.setProperty("Album_Theme", getJoinedItem(album.get('theme', "")))
-                liz.setProperty("Album_Type", getJoinedItem(album.get('type', "")))
+                liz.setProperty("Album_Mood", _get_joined_items(album.get('mood', "")))
+                liz.setProperty("Album_Style", _get_joined_items(album.get('style', "")))
+                liz.setProperty("Album_Theme", _get_joined_items(album.get('theme', "")))
+                liz.setProperty("Album_Type", _get_joined_items(album.get('type', "")))
                 liz.setProperty("Album_Label", album['albumlabel'])
                 liz.setProperty("Album_Description", album['description'])
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
@@ -489,10 +427,10 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
                 liz.setInfo(type="Video", infoLabels={"Title": musicvideo['title'],
                                                       "Year": musicvideo['year'],
                                                       "Genre": " / ".join(musicvideo['genre']),
-                                                      "Studio": getFirstItem(musicvideo.get('studio', "")),
-                                                      "Plot": getPlot(musicvideo['plot'], plot_enable, musicvideo['playcount']),
+                                                      "Studio": _get_first_item(musicvideo.get('studio', "")),
+                                                      "Plot": _get_plot(musicvideo['plot'], plot_enable, musicvideo['playcount']),
                                                       "Artist": musicvideo['artist'],
-                                                      "Director": getJoinedItem(musicvideo.get('director', "")),
+                                                      "Director": _get_joined_items(musicvideo.get('director', "")),
                                                       "Playcount": musicvideo['playcount'],
                                                       "mediatype": "musicvideo"})
                 liz.setProperty("resumetime", str(musicvideo['resume']['position']))
@@ -552,6 +490,98 @@ def parse_dbid(dbtype, dbid, full_liz):
         del json_query
 
 
+def _get_cast(castData):
+    listCast = []
+    listCastAndRole = []
+    for castmember in castData:
+        listCast.append(castmember["name"])
+        listCastAndRole.append((castmember["name"], castmember["role"]))
+    return [listCast, listCastAndRole]
+
+
+def _get_plot(plot, plot_enable, watched):
+    if watched >= 1:
+        watched = True
+    else:
+        watched = False
+    if not plot_enable and not watched:
+        plot = ADDON_LANGUAGE(32014)
+    return plot
+
+
+def _get_first_item(item):
+    if len(item) > 0:
+        item = item[0]
+    else:
+        item = ""
+    return item
+
+
+def _get_joined_items(item):
+    if len(item) > 0:
+        item = " / ".join(item)
+    else:
+        item = ""
+    return item
+
+
+def _combine_by_date(liz_a, date_a, liz_b, date_b, limit, settinglimit):
+    count = 0
+    full_liz = liz_a[:]
+
+    for itemIndex, itemDate in enumerate(date_b):
+        added = False
+        for compareIndex, compareDate in enumerate(date_a):
+            if compareIndex < count or count > settinglimit:
+                continue
+            if itemDate > compareDate:
+                full_liz.insert(count, liz_b[itemIndex])
+                date_a.insert(count, itemDate)
+                added = True
+                break
+            count += 1
+        if not added and count < settinglimit:
+            full_liz.append(liz_b[-1])
+            date_a.append(date_b[-1])
+
+    # Limit the results
+    if limit is not -1:
+        full_liz = full_liz[:limit]
+    full_liz = full_liz[:settinglimit]
+
+    return full_liz
+
+
+def _get_query(dbtype, dbid):
+    if not dbtype:
+        if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
+            dbtype = 'movie'
+        elif xbmc.getCondVisibility("VideoPlayer.Content(episodes)"):
+            dbtype = 'episode'
+        elif xbmc.getCondVisibility("VideoPlayer.Content(musicvideos)"):
+            dbtype = 'musicvideo'
+    if dbtype == "movie":
+        method = '"VideoLibrary.GetMovieDetails"'
+        param = '"movieid"'
+    elif dbtype == "tvshow":
+        method = '"VideoLibrary.GetTVShowDetails"'
+        param = '"tvshowid"'
+    elif dbtype == "episode":
+        method = '"VideoLibrary.GetEpisodeDetails"'
+        param = '"episodeid"'
+    elif dbtype == "musicvideo":
+        method = '"VideoLibrary.GetMusicVideoDetails"'
+        param = '"musicvideoid"'
+    elif dbtype == "song":
+        method = '"AudioLibrary.GetSongDetails"'
+        param = '"songid"'
+    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
+                                                            "params": {%s: %d,
+                                                            "properties": ["title", "file", "cast"]},
+                                                            "id": 1 }''' % (method, param, int(dbid)))
+    return json_query
+
+
 def _get_data(request, usecache):
     if request == "randommovies":
         return LIBRARY._fetch_random_movies(usecache)
@@ -583,33 +613,3 @@ def _get_data(request, usecache):
         return LIBRARY._fetch_random_musicvideos(usecache)
     elif request == "recentmusicvideos":
         return LIBRARY._fetch_recent_musicvideos(usecache)
-
-
-def _get_query(dbtype, dbid):
-    if not dbtype:
-        if xbmc.getCondVisibility("VideoPlayer.Content(movies)"):
-            dbtype = 'movie'
-        elif xbmc.getCondVisibility("VideoPlayer.Content(episodes)"):
-            dbtype = 'episode'
-        elif xbmc.getCondVisibility("VideoPlayer.Content(musicvideos)"):
-            dbtype = 'musicvideo'
-    if dbtype == "movie":
-        method = '"VideoLibrary.GetMovieDetails"'
-        param = '"movieid"'
-    elif dbtype == "tvshow":
-        method = '"VideoLibrary.GetTVShowDetails"'
-        param = '"tvshowid"'
-    elif dbtype == "episode":
-        method = '"VideoLibrary.GetEpisodeDetails"'
-        param = '"episodeid"'
-    elif dbtype == "musicvideo":
-        method = '"VideoLibrary.GetMusicVideoDetails"'
-        param = '"musicvideoid"'
-    elif dbtype == "song":
-        method = '"AudioLibrary.GetSongDetails"'
-        param = '"songid"'
-    json_query = xbmc.executeJSONRPC('''{ "jsonrpc": "2.0", "method": %s,
-                                                            "params": {%s: %d,
-                                                            "properties": ["title", "file", "cast"]},
-                                                            "id": 1 }''' % (method, param, int(dbid)))
-    return json_query
