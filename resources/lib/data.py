@@ -24,12 +24,9 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 import xbmcplugin
-import library
+import json as simplejson
+from resources.lib import library
 
-if sys.version_info < (2, 7):
-    import simplejson
-else:
-    import json as simplejson
 
 ADDON = xbmcaddon.Addon()
 ADDON_VERSION = ADDON.getAddonInfo('version')
