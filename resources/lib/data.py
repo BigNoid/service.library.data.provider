@@ -102,6 +102,8 @@ def get_actors(dbid, dbtype, full_liz):
             cast = json_query['result']['moviedetails']['cast']
         elif 'result' in json_query and 'episodedetails' in json_query['result']:
             cast = json_query['result']['episodedetails']['cast']
+        elif 'result' in json_query and 'tvshowdetails' in json_query['result']:
+            cast = json_query['result']['tvshowdetails']['cast']
         for actor in cast:
             liz = xbmcgui.ListItem(actor["name"])
             liz.setLabel(actor["name"])
