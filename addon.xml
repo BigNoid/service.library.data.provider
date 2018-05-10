@@ -12,7 +12,10 @@
 	<extension library="service.py" point="xbmc.service" start="login" />
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Browse movies and episodes in a variety of sorted playlists.</summary>
+		<summary lang="sk">Prehliadanie filmov a epizód seriálov prostredníctvom rôzne zoradených zoznamov.</summary> 
 		<description lang="en">Plugin for skins to provide library data throughout the skin. It can also be used as standalone plugin to browse the playlists in the video library.</description>
+		<description lang="sk">Modul pre skiny poskytujúci údaje z knižnice. Taktiež môže byť použitý ako samostatný doplnok pre prehliadanie zoznamov video knižnice.</description>
+		<disclaimer lang="sk" /> 
 		<disclaimer lang="en" />
 		<platform>all</platform>
 		<language />
