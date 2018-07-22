@@ -28,7 +28,6 @@ from time import gmtime, strftime
 
 PLOT_ENABLE = True
 
-
 class LibraryFunctions():
     def __init__(self):
         self.WINDOW = xbmcgui.Window(10000)
@@ -333,3 +332,30 @@ class LibraryFunctions():
 
             return unicode(json.dumps(rv), 'utf-8', errors='ignore')
         return self._fetch_items(useCache, prefix="favouriteepisodes", queryFunc=query_favourite)
+
+    # All Recommended episodes : Earliest unwatched episode of any show, includes pilots
+    def _fetch_all_recommended_episodes(self, useCache=False):
+        def query_all_recommended_episodes():
+            # First we get a list of all the in-progress TV shows.
+            json_query_string = self.json_query("VideoLibrary.GetTVShows",
+                                                properties=self.tvshow_properties,
+                                                limit=None)
+            json_query = json.loads(json_query_string)
+
+            # If we found any, find the oldest unwatched show for each one.
+            if "result" in json_query and 'tvshows' in json_query['result']:
+                for item in json_query['result']['tvshows']:
+                    if xbmc.abortRequested:
+                        break
+
+                    json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True,
+                                                  include_specials=self.INCLUDE_SPECIALS,
+                                                  properties=self.tvepisode_properties,
+                                                  sort={"method": "episode"}, limit=1,
+                                                  params={"tvshowid": item['tvshowid']},
+                                                  query_filter=self.unplayed_filter)
+
+                    self.WINDOW.setProperty("all-recommended-episodes-data-%d"
+                                            % item['tvshowid'], json_query2)
+            return json_query_string
+        return self._fetch_items(useCache, "allrecommendedepisodes", query_all_recommended_episodes)

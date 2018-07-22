@@ -79,6 +79,7 @@ class Main:
         LIBRARY._fetch_recommended_movies()
         LIBRARY._fetch_recommended_episodes()
         LIBRARY._fetch_recommended_albums()
+        LIBRARY._fetch_all_recommended_episodes()
 
     def _fetch_favourite(self):
         LIBRARY._fetch_favourite_episodes()
@@ -108,6 +109,7 @@ class Main:
             LIBRARY._fetch_recommended_episodes()
             LIBRARY._fetch_recent_episodes()
             LIBRARY._fetch_favourite_episodes()
+            LIBRARY._fetch_all_recommended_episodes()
         elif type == 'video':
             # only on db update
             LIBRARY._fetch_recommended_movies()
