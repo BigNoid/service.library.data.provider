@@ -106,7 +106,7 @@ def get_actors(dbid, dbtype, full_liz):
             liz = xbmcgui.ListItem(actor["name"])
             liz.setLabel(actor["name"])
             liz.setLabel2(actor["role"])
-            liz.setArt({'icon': 'DefaultActor.png', 'thumb': actor['art'].get('thumbnail', '')})
+            liz.setArt({'icon': 'DefaultActor.png', 'thumb': actor.get('thumbnail', '')})
             full_liz.append(("", liz, False))
 
         del json_query
@@ -347,7 +347,7 @@ def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", song['fanart'])
                 liz.setProperty("dbid", str(song['songid']))
-                liz.setArt({'icon': 'DefaultMusicSongs.png', 'thumb': song['art'].get('thumbnail', '')})
+                liz.setArt({'icon': 'DefaultMusicSongs.png', 'thumb': song.get('thumbnail', '')})
                 full_liz.append((song['file'], liz, False))
 
                 if date_type is not None:
@@ -387,7 +387,7 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", album['fanart'])
                 liz.setProperty("dbid", str(album['albumid']))
-                liz.setArt({'icon': 'DefaultAlbumCover.png', 'thumb': album['art'].get('thumbnail', '')})
+                liz.setArt({'icon': 'DefaultAlbumCover.png', 'thumb': album.get('thumbnail', '')})
 
                 # Path will call plugin again, with the album id
                 path = sys.argv[0] + "?type=play_album&album=" + str(album['albumid'])
