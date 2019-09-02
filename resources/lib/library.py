@@ -19,6 +19,7 @@
 #    This script is based on service.skin.widgets
 #    Thanks to the original authors
 
+import sys
 import xbmc
 import xbmcgui
 import xbmcaddon
@@ -200,7 +201,10 @@ class LibraryFunctions():
         json_string = json.dumps(json_query)
         rv = xbmc.executeJSONRPC(json_string)
 
-        return unicode(rv, 'utf-8', errors='ignore')
+        if sys.version_info.major == 3:
+            return rv
+        else:
+            return unicode(rv, 'utf-8', errors='ignore')
 
     # These functions default to random items.
     # By sorting differently they'll also be used for recent items.
