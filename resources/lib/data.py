@@ -319,11 +319,18 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                 liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
 
                 hasVideo = False
-                for key, value in episode['streamdetails'].iteritems():
-                    for stream in value:
-                        if 'video' in key:
-                            hasVideo = True
-                        liz.addStreamInfo(key, stream)
+                if sys.version_info.major == 3:
+                    for key, value in episode['streamdetails'].items():
+                        for stream in value:
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo(key, stream)
+                else:
+                    for key, value in episode['streamdetails'].iteritems():
+                        for stream in value:
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo(key, stream)
 
                 # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
@@ -448,11 +455,18 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
                 liz.setArt(musicvideo['art'])
                 liz.setArt({'icon': 'DefaultVideoCover.png', 'thumb': musicvideo['art'].get('poster', '')})
                 hasVideo = False
-                for key, value in musicvideo['streamdetails'].iteritems():
-                    for stream in value:
-                        if 'video' in key:
-                            hasVideo = True
-                        liz.addStreamInfo(key, stream)
+                if sys.version_info.major == 3:
+                    for key, value in musicvideo['streamdetails'].items():
+                        for stream in value:
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo(key, stream)
+                else:
+                    for key, value in musicvideo['streamdetails'].iteritems():
+                        for stream in value:
+                            if 'video' in key:
+                                hasVideo = True
+                            liz.addStreamInfo(key, stream)
 
                     # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
