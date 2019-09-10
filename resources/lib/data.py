@@ -161,7 +161,7 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("imdbnumber", str(movie['imdbnumber']))
                 liz.setProperty("fanart_image", movie['art'].get('fanart', ''))
                 liz.setArt(movie['art'])
-                liz.setArt({'icon': 'DefaultVideo.png'})
+                liz.setArt({'icon': 'DefaultVideo.png', 'thumb': movie['art'].get('poster', '')})
                 hasVideo = False
                 if sys.version_info.major == 3:
                     for key, value in movie['streamdetails'].items():
@@ -240,7 +240,7 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                         liz.setProperty("fanart_image", episode['art'].get('tvshow.fanart', ''))
                         liz.setProperty("dbid", str(episode['episodeid']))
                         liz.setArt(episode['art'])
-                        liz.setArt({'icon': 'DefaultTVShows.png'})
+                        liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
                         hasVideo = False
 
                         if sys.version_info.major == 3:
@@ -316,7 +316,7 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                 liz.setProperty("dbid", str(episode['episodeid']))
                 liz.setProperty("fanart_image", episode['art'].get('tvshow.fanart', ''))
                 liz.setArt(episode['art'])
-                liz.setArt({'icon': 'DefaultTVShows.png'})
+                liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
 
                 hasVideo = False
                 for key, value in episode['streamdetails'].iteritems():
@@ -363,7 +363,7 @@ def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", song['fanart'])
                 liz.setProperty("dbid", str(song['songid']))
-                liz.setArt({'icon': 'DefaultMusicSongs.png', 'thumb': song.get('thumbnail', '')})
+                liz.setArt({'icon': 'DefaultMusicSongs.png', 'thumb': song['thumbnail']})
                 full_liz.append((song['file'], liz, False))
 
                 if date_type is not None:
@@ -403,7 +403,7 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", album['fanart'])
                 liz.setProperty("dbid", str(album['albumid']))
-                liz.setArt({'icon': 'DefaultAlbumCover.png', 'thumb': album.get('thumbnail', '')})
+                liz.setArt({'icon': 'DefaultAlbumCover.png', 'thumb': album['thumbnail']})
 
                 # Path will call plugin again, with the album id
                 path = sys.argv[0] + "?type=play_album&album=" + str(album['albumid'])
@@ -446,7 +446,7 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
                 liz.setProperty("dbid", str(musicvideo['musicvideoid']))
                 liz.setProperty("fanart_image", musicvideo['art'].get('fanart', ''))
                 liz.setArt(musicvideo['art'])
-                liz.setArt({'icon': 'DefaultVideoCover.png'})
+                liz.setArt({'icon': 'DefaultVideoCover.png', 'thumb': musicvideo['art'].get('poster', '')})
                 hasVideo = False
                 for key, value in musicvideo['streamdetails'].iteritems():
                     for stream in value:
