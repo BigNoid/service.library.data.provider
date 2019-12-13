@@ -96,7 +96,11 @@ def get_playlist_stats(path):
 def get_actors(dbid, dbtype, full_liz):
     json_query = _get_query(dbtype, dbid)
     if json_query:
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        if sys.version_info.major == 3:
+            json_query = json_query
+        else:
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             cast = json_query['result']['moviedetails']['cast']
@@ -489,7 +493,11 @@ def parse_dbid(dbtype, dbid, full_liz):
     while json_query == "LOADING":
         xbmc.sleep(100)
     if json_query:
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
+        if sys.version_info.major == 3:
+            json_query = json_query
+        else:
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             item = json_query['result']['moviedetails']

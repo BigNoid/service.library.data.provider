@@ -335,5 +335,9 @@ class LibraryFunctions():
                     self.WINDOW.setProperty("favouriteepisodes-data-%d"
                                             % fav['tvshowid'], show_info_string)
 
-            return unicode(json.dumps(rv), 'utf-8', errors='ignore')
+            if sys.version_info.major == 3:
+                return json.dumps(rv)
+            else:
+                return unicode(json.dumps(rv), 'utf-8', errors='ignore')
+
         return self._fetch_items(useCache, prefix="favouriteepisodes", queryFunc=query_favourite)
