@@ -201,10 +201,7 @@ class LibraryFunctions():
         json_string = json.dumps(json_query)
         rv = xbmc.executeJSONRPC(json_string)
 
-        if sys.version_info.major == 3:
-            return rv
-        else:
-            return unicode(rv, 'utf-8', errors='ignore')
+        return rv
 
     # These functions default to random items.
     # By sorting differently they'll also be used for recent items.
@@ -335,9 +332,6 @@ class LibraryFunctions():
                     self.WINDOW.setProperty("favouriteepisodes-data-%d"
                                             % fav['tvshowid'], show_info_string)
 
-            if sys.version_info.major == 3:
-                return json.dumps(rv)
-            else:
-                return unicode(json.dumps(rv), 'utf-8', errors='ignore')
+            return json.dumps(rv)
 
         return self._fetch_items(useCache, prefix="favouriteepisodes", queryFunc=query_favourite)

@@ -79,7 +79,7 @@ def get_playlist_stats(path):
                     tvshowscount += 1
                 else:
                     numitems += 1
-                    if "playcount" in item.keys():
+                    if "playcount" in list(item.keys()):
                         if item["playcount"] > 0:
                             played += 1
                         if item["resume"]["position"] > 0:
@@ -96,11 +96,6 @@ def get_playlist_stats(path):
 def get_actors(dbid, dbtype, full_liz):
     json_query = _get_query(dbtype, dbid)
     if json_query:
-        if sys.version_info.major == 3:
-            json_query = json_query
-        else:
-            json_query = unicode(json_query, 'utf-8', errors='ignore')
-
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             cast = json_query['result']['moviedetails']['cast']
@@ -167,18 +162,11 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setArt(movie['art'])
                 liz.setArt({'icon': 'DefaultVideo.png', 'thumb': movie['art'].get('poster', '')})
                 hasVideo = False
-                if sys.version_info.major == 3:
-                    for key, value in movie['streamdetails'].items():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
-                else:
-                    for key, value in movie['streamdetails'].iteritems():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
+                for key, value in list(movie['streamdetails'].items()):
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
 
                 # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
@@ -247,18 +235,11 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                         liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
                         hasVideo = False
 
-                        if sys.version_info.major == 3:
-                            for key, value in episode['streamdetails'].items():
-                                for stream in value:
-                                    if 'video' in key:
-                                        hasVideo = True
-                                    liz.addStreamInfo(key, stream)
-                        else:
-                            for key, value in episode['streamdetails'].iteritems():
-                                for stream in value:
-                                    if 'video' in key:
-                                        hasVideo = True
-                                    liz.addStreamInfo(key, stream)
+                        for key, value in list(episode['streamdetails'].items()):
+                            for stream in value:
+                                if 'video' in key:
+                                    hasVideo = True
+                                liz.addStreamInfo(key, stream)
 
 
                         # if duration wasnt in the streaminfo try adding the scraped one
@@ -323,18 +304,11 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                 liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
 
                 hasVideo = False
-                if sys.version_info.major == 3:
-                    for key, value in episode['streamdetails'].items():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
-                else:
-                    for key, value in episode['streamdetails'].iteritems():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
+                for key, value in list(episode['streamdetails'].items()):
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
 
                 # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
@@ -459,18 +433,12 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
                 liz.setArt(musicvideo['art'])
                 liz.setArt({'icon': 'DefaultVideoCover.png', 'thumb': musicvideo['art'].get('poster', '')})
                 hasVideo = False
-                if sys.version_info.major == 3:
-                    for key, value in musicvideo['streamdetails'].items():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
-                else:
-                    for key, value in musicvideo['streamdetails'].iteritems():
-                        for stream in value:
-                            if 'video' in key:
-                                hasVideo = True
-                            liz.addStreamInfo(key, stream)
+
+                for key, value in list(musicvideo['streamdetails'].items()):
+                    for stream in value:
+                        if 'video' in key:
+                            hasVideo = True
+                        liz.addStreamInfo(key, stream)
 
                     # if duration wasnt in the streaminfo try adding the scraped one
                 if not hasVideo:
@@ -493,11 +461,6 @@ def parse_dbid(dbtype, dbid, full_liz):
     while json_query == "LOADING":
         xbmc.sleep(100)
     if json_query:
-        if sys.version_info.major == 3:
-            json_query = json_query
-        else:
-            json_query = unicode(json_query, 'utf-8', errors='ignore')
-
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             item = json_query['result']['moviedetails']
