@@ -12,7 +12,6 @@
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en_GB">Browse movies and episodes in a variety of sorted playlists.</summary>
 		<description lang="en_GB">Plugin for skins to provide library data throughout the skin. It can also be used as standalone plugin to browse the playlists in the video library.</description>
-		<disclaimer lang="en_GB" />
 		<platform>all</platform>
 		<license>GPL-2.0-only</license>
 		<forum>https://forum.kodi.tv/showthread.php?tid=210063</forum>
