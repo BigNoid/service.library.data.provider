@@ -48,7 +48,7 @@ class LibraryFunctions():
 
         if useCache:
             # Check whether there is saved data
-            if self.WINDOW.getProperty(query_type + "-data") is not "":
+            if self.WINDOW.getProperty(query_type + "-data") != "":
                 return self.WINDOW.getProperty(query_type + "-data")
 
         # We haven't got any data, so don't send back anything
@@ -200,7 +200,7 @@ class LibraryFunctions():
         json_string = json.dumps(json_query)
         rv = xbmc.executeJSONRPC(json_string)
 
-        return unicode(rv, 'utf-8', errors='ignore')
+        return rv
 
     # These functions default to random items.
     # By sorting differently they'll also be used for recent items.
@@ -273,7 +273,7 @@ class LibraryFunctions():
             # If we found any, find the oldest unwatched show for each one.
             if "result" in json_query and 'tvshows' in json_query['result']:
                 for item in json_query['result']['tvshows']:
-                    if xbmc.abortRequested:
+                    if xbmc.Monitor().abortRequested():
                         break
                     json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True,
                                                   include_specials=self.INCLUDE_SPECIALS,
@@ -331,5 +331,6 @@ class LibraryFunctions():
                     self.WINDOW.setProperty("favouriteepisodes-data-%d"
                                             % fav['tvshowid'], show_info_string)
 
-            return unicode(json.dumps(rv), 'utf-8', errors='ignore')
+            return json.dumps(rv)
+
         return self._fetch_items(useCache, prefix="favouriteepisodes", queryFunc=query_favourite)

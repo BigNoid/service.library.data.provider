@@ -40,7 +40,7 @@ def get_playlist_stats(path):
     if ("activatewindow" in path.lower()) and ("://" in path) and ("," in path):
         if ("\"" in path):
             # remove &quot; from path (gets added by favorites)
-            path = path.translate(None, '\"')
+            path = path.translate(str.maketrans('','', '\"'))
         playlistpath = path.split(",")[1]
         json_query = xbmc.executeJSONRPC('''{"jsonrpc": "2.0", "method": "Files.GetDirectory",
                                              "params": {"directory": "%s", "media": "video",
@@ -79,7 +79,7 @@ def get_playlist_stats(path):
                     tvshowscount += 1
                 else:
                     numitems += 1
-                    if "playcount" in item.keys():
+                    if "playcount" in list(item.keys()):
                         if item["playcount"] > 0:
                             played += 1
                         if item["resume"]["position"] > 0:
@@ -96,7 +96,6 @@ def get_playlist_stats(path):
 def get_actors(dbid, dbtype, full_liz):
     json_query = _get_query(dbtype, dbid)
     if json_query:
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             cast = json_query['result']['moviedetails']['cast']
@@ -106,8 +105,7 @@ def get_actors(dbid, dbtype, full_liz):
             liz = xbmcgui.ListItem(actor["name"])
             liz.setLabel(actor["name"])
             liz.setLabel2(actor["role"])
-            liz.setThumbnailImage(actor.get('thumbnail', ""))
-            liz.setIconImage('DefaultActor.png')
+            liz.setArt({'icon': 'DefaultActor.png', 'thumb': actor.get('thumbnail', '')})
             full_liz.append(("", liz, False))
 
         del json_query
@@ -162,10 +160,9 @@ def parse_movies(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("imdbnumber", str(movie['imdbnumber']))
                 liz.setProperty("fanart_image", movie['art'].get('fanart', ''))
                 liz.setArt(movie['art'])
-                liz.setThumbnailImage(movie['art'].get('poster', ''))
-                liz.setIconImage('DefaultVideoCover.png')
+                liz.setArt({'icon': 'DefaultVideo.png', 'thumb': movie['art'].get('poster', '')})
                 hasVideo = False
-                for key, value in movie['streamdetails'].iteritems():
+                for key, value in list(movie['streamdetails'].items()):
                     for stream in value:
                         if 'video' in key:
                             hasVideo = True
@@ -199,7 +196,7 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
         if "result" in json_query and 'tvshows' in json_query['result']:
             count = 0
             for tvshow in json_query['result']['tvshows']:
-                if xbmc.abortRequested:
+                if xbmc.Monitor().abortRequested():
                     break
                 json_query2 = xbmcgui.Window(10000).getProperty(prefix + "-data-" + str(tvshow['tvshowid']))
                 if json_query2:
@@ -235,14 +232,15 @@ def parse_tvshows_recommended(request, list_type, full_liz, usecache, plot_enabl
                         liz.setProperty("fanart_image", episode['art'].get('tvshow.fanart', ''))
                         liz.setProperty("dbid", str(episode['episodeid']))
                         liz.setArt(episode['art'])
-                        liz.setThumbnailImage(episode['art'].get('thumb', ''))
-                        liz.setIconImage('DefaultTVShows.png')
+                        liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
                         hasVideo = False
-                        for key, value in episode['streamdetails'].iteritems():
+
+                        for key, value in list(episode['streamdetails'].items()):
                             for stream in value:
                                 if 'video' in key:
                                     hasVideo = True
                                 liz.addStreamInfo(key, stream)
+
 
                         # if duration wasnt in the streaminfo try adding the scraped one
                         if not hasVideo:
@@ -303,11 +301,10 @@ def parse_tvshows(request, list_type, full_liz, usecache, plot_enable, limit, da
                 liz.setProperty("dbid", str(episode['episodeid']))
                 liz.setProperty("fanart_image", episode['art'].get('tvshow.fanart', ''))
                 liz.setArt(episode['art'])
-                liz.setThumbnailImage(episode['art'].get('thumb', ''))
-                liz.setIconImage('DefaultTVShows.png')
+                liz.setArt({'icon': 'DefaultTVShows.png', 'thumb': episode['art'].get('thumb', '')})
 
                 hasVideo = False
-                for key, value in episode['streamdetails'].iteritems():
+                for key, value in list(episode['streamdetails'].items()):
                     for stream in value:
                         if 'video' in key:
                             hasVideo = True
@@ -351,8 +348,7 @@ def parse_song(request, list_type, full_liz, usecache, plot_enable, limit, date_
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", song['fanart'])
                 liz.setProperty("dbid", str(song['songid']))
-                liz.setThumbnailImage(song['thumbnail'])
-                liz.setIconImage('DefaultMusicSongs.png')
+                liz.setArt({'icon': 'DefaultMusicSongs.png', 'thumb': song['thumbnail']})
                 full_liz.append((song['file'], liz, False))
 
                 if date_type is not None:
@@ -392,8 +388,7 @@ def parse_albums(request, list_type, full_liz, usecache, plot_enable, limit, dat
                 liz.setProperty("type", ADDON_LANGUAGE(list_type))
                 liz.setProperty("fanart_image", album['fanart'])
                 liz.setProperty("dbid", str(album['albumid']))
-                liz.setThumbnailImage(album['thumbnail'])
-                liz.setIconImage('DefaultAlbumCover.png')
+                liz.setArt({'icon': 'DefaultAlbumCover.png', 'thumb': album['thumbnail']})
 
                 # Path will call plugin again, with the album id
                 path = sys.argv[0] + "?type=play_album&album=" + str(album['albumid'])
@@ -436,10 +431,10 @@ def parse_musicvideos(request, list_type, full_liz, usecache, plot_enable, limit
                 liz.setProperty("dbid", str(musicvideo['musicvideoid']))
                 liz.setProperty("fanart_image", musicvideo['art'].get('fanart', ''))
                 liz.setArt(musicvideo['art'])
-                liz.setThumbnailImage(musicvideo['art'].get('poster', ''))
-                liz.setIconImage('DefaultVideoCover.png')
+                liz.setArt({'icon': 'DefaultVideoCover.png', 'thumb': musicvideo['art'].get('poster', '')})
                 hasVideo = False
-                for key, value in musicvideo['streamdetails'].iteritems():
+
+                for key, value in list(musicvideo['streamdetails'].items()):
                     for stream in value:
                         if 'video' in key:
                             hasVideo = True
@@ -466,7 +461,6 @@ def parse_dbid(dbtype, dbid, full_liz):
     while json_query == "LOADING":
         xbmc.sleep(100)
     if json_query:
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
         json_query = simplejson.loads(json_query)
         if 'result' in json_query and 'moviedetails' in json_query['result']:
             item = json_query['result']['moviedetails']
